@@ -1,9 +1,9 @@
 package client
 
 import (
-	"io"
 	"github.com/amitbet/vncproxy/common"
 	"github.com/amitbet/vncproxy/logger"
+	"io"
 )
 
 type WriteTo struct {

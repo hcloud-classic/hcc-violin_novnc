@@ -3,8 +3,8 @@ package encodings
 import (
 	"bytes"
 	"encoding/binary"
-	"io"
 	"github.com/amitbet/vncproxy/common"
+	"io"
 )
 
 type ZRLEEncoding struct {

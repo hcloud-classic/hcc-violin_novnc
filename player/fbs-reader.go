@@ -3,11 +3,11 @@ package player
 import (
 	"bytes"
 	"encoding/binary"
-	"io"
-	"os"
 	"github.com/amitbet/vncproxy/common"
 	"github.com/amitbet/vncproxy/encodings"
 	"github.com/amitbet/vncproxy/logger"
+	"io"
+	"os"
 )
 
 type FbsReader struct {

@@ -3,9 +3,9 @@ package encodings
 import (
 	"bytes"
 	"errors"
-	"io"
 	"github.com/amitbet/vncproxy/common"
 	"github.com/amitbet/vncproxy/logger"
+	"io"
 )
 
 var TightMinToCompress int = 12

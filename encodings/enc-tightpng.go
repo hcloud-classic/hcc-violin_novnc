@@ -2,9 +2,9 @@ package encodings
 
 import (
 	"fmt"
-	"io"
 	"github.com/amitbet/vncproxy/common"
 	"github.com/amitbet/vncproxy/logger"
+	"io"
 )
 
 type TightPngEncoding struct {

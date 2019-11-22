@@ -3,8 +3,8 @@ package client
 import (
 	"bytes"
 	"encoding/binary"
-	"io"
 	"github.com/amitbet/vncproxy/common"
+	"io"
 )
 
 func readPixelFormat(r io.Reader, result *common.PixelFormat) error {

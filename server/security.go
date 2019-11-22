@@ -5,8 +5,8 @@ import (
 	"crypto/des"
 	"crypto/rand"
 	"errors"
-	"log"
 	"github.com/amitbet/vncproxy/common"
+	"log"
 )
 
 type SecurityType uint8

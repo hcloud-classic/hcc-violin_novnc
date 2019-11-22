@@ -1,9 +1,9 @@
 package encodings
 
 import (
-	"io"
 	"github.com/amitbet/vncproxy/common"
 	"github.com/amitbet/vncproxy/logger"
+	"io"
 )
 
 type EncLedStatePseudo struct {

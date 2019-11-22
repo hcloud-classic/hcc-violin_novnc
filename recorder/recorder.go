@@ -3,11 +3,11 @@ package recorder
 import (
 	"bytes"
 	"encoding/binary"
-	"os"
-	"time"
 	"github.com/amitbet/vncproxy/common"
 	"github.com/amitbet/vncproxy/logger"
 	"github.com/amitbet/vncproxy/server"
+	"os"
+	"time"
 )
 
 type Recorder struct {

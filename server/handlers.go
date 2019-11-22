@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/amitbet/vncproxy/common"
 
-	"io"
 	"github.com/amitbet/vncproxy/logger"
+	"io"
 )
 
 const ProtoVersionLength = 12

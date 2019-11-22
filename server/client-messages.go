@@ -2,8 +2,8 @@ package server
 
 import (
 	"encoding/binary"
-	"io"
 	"github.com/amitbet/vncproxy/common"
+	"io"
 )
 
 // Key represents a VNC key press.
@@ -313,10 +313,10 @@ func (msg *MsgClientCutText) Write(c io.Writer) error {
 
 // MsgClientQemuExtendedKey holds the wire format message, for qemu keys
 type MsgClientQemuExtendedKey struct {
-	SubType  uint8   // sub type
-	IsDown   uint16 // button down indicator
-	KeySym   uint32 // key symbol
-	KeyCode  uint32 // key code
+	SubType uint8  // sub type
+	IsDown  uint16 // button down indicator
+	KeySym  uint32 // key symbol
+	KeyCode uint32 // key code
 }
 
 func (*MsgClientQemuExtendedKey) Type() common.ClientMessageType {

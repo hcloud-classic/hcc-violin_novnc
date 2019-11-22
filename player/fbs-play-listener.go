@@ -3,12 +3,12 @@ package player
 import (
 	"encoding/binary"
 
-	"io"
-	"time"
 	"github.com/amitbet/vncproxy/client"
 	"github.com/amitbet/vncproxy/common"
 	"github.com/amitbet/vncproxy/logger"
 	"github.com/amitbet/vncproxy/server"
+	"io"
+	"time"
 )
 
 type VncStreamFileReader interface {

@@ -1,8 +1,8 @@
 package encodings
 
 import (
-	"io"
 	"github.com/amitbet/vncproxy/common"
+	"io"
 )
 
 type PseudoEncoding struct {
