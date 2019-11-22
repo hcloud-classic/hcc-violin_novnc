@@ -7,6 +7,7 @@ import (
 	"io"
 	"net"
 	"unicode"
+
 	"github.com/amitbet/vncproxy/common"
 	"github.com/amitbet/vncproxy/logger"
 )

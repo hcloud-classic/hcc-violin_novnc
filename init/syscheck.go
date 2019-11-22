@@ -1,6 +1,6 @@
 package init
 
-import "hcc/violin-scheduler/lib/syscheck"
+import "hcc/violin-novnc/lib/syscheck"
 
 func syscheckInit() error {
 	err := syscheck.CheckRoot()

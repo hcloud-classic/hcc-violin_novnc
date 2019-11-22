@@ -1,6 +1,7 @@
 package proxy
 
 import (
+	"fmt"
 	"net"
 	"path"
 	"strconv"
@@ -174,7 +175,7 @@ func (vp *VncProxy) StartListening() {
 	if vp.ProxyVncPassword != "" {
 		secHandlers = []server.SecurityHandler{&server.ServerAuthVNC{vp.ProxyVncPassword}}
 	}
-	cfg := &server.ServerConfig{
+	qwe := &server.ServerConfig{
 		SecurityHandlers: secHandlers,
 		Encodings:        []common.IEncoding{&encodings.RawEncoding{}, &encodings.TightEncoding{}, &encodings.CopyRectEncoding{}},
 		PixelFormat:      common.NewPixelFormat(32),
@@ -185,6 +186,7 @@ func (vp *VncProxy) StartListening() {
 		NewConnHandler:   vp.newServerConnHandler,
 		UseDummySession:  !vp.UsingSessions,
 	}
+	cfg := qwe
 
 	if vp.TCPListeningURL != "" && vp.WsListeningURL != "" {
 		logger.Infof("running two listeners: tcp port: %s, ws url: %s", vp.TCPListeningURL, vp.WsListeningURL)
@@ -192,7 +194,7 @@ func (vp *VncProxy) StartListening() {
 		go server.WsServe(vp.WsListeningURL, cfg)
 		server.TcpServe(vp.TCPListeningURL, cfg)
 	}
-
+	fmt.Println("####", vp.WsListeningURL)
 	if vp.WsListeningURL != "" {
 		logger.Infof("running ws listener url: %s", vp.WsListeningURL)
 		server.WsServe(vp.WsListeningURL, cfg)

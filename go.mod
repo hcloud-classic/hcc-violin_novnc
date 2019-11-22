@@ -1,3 +1,13 @@
-module github.com/amitbet/vncproxy
+module hcc/violin-novnc
 
-require golang.org/x/net v0.0.0-20181129055619-fae4c4e3ad76
+go 1.12
+
+require (
+	github.com/Terry-Mao/goconf v0.0.0-20161115082538-13cb73d70c44
+	github.com/amitbet/vncproxy v0.0.0-20190616173805-f07be04814cb
+	github.com/go-sql-driver/mysql v1.4.1
+	github.com/graphql-go/graphql v0.7.8
+	github.com/graphql-go/handler v0.2.3
+	golang.org/x/net v0.0.0-20191119073136-fc4aabc6c914
+	google.golang.org/appengine v1.6.5 // indirect
+)

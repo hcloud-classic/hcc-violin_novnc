@@ -4,6 +4,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+
 	"github.com/amitbet/vncproxy/logger"
 
 	"golang.org/x/net/websocket"
@@ -14,7 +15,6 @@ type WsServer struct {
 }
 
 type WsHandler func(io.ReadWriter, *ServerConfig, string)
-
 
 func (wsServer *WsServer) Listen(urlStr string, handlerFunc WsHandler) {
 
@@ -38,6 +38,7 @@ func (wsServer *WsServer) Listen(urlStr string, handlerFunc WsHandler) {
 			handlerFunc(ws, wsServer.cfg, sessionId)
 		}))
 
+	// err = http.ListenAndServe(url.Host, nil)
 	err = http.ListenAndServe(url.Host, nil)
 	if err != nil {
 		panic("ListenAndServe: " + err.Error())

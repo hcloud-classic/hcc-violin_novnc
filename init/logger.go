@@ -2,7 +2,7 @@ package init
 
 import (
 	"errors"
-	"hcc/violin-scheduler/lib/logger"
+	"hcc/violin-novnc/lib/logger"
 )
 
 func loggerInit() error {
