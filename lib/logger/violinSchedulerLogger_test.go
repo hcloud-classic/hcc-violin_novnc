@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"hcc/violin-scheduler/lib/syscheck"
+	"hcc/violin-novnc/lib/syscheck"
 	"testing"
 )
 
