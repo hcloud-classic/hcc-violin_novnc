@@ -36,22 +36,24 @@ go_report:
   stage: test
   script:
     - gmake goreport
-  only:
-  - master
+  # only:
+  # - master
 
-lint_code:
-  stage: test
-  script:
-    - gmake lint_dep
-    - gmake lint
+# lint_code:
+#   stage: test
+#   script:
+#     - gmake lint_dep
+#     - gmake lint
 
 build:
   stage: build
   script:
     - gmake
-    - if pgrep GraphQL_Cello; then killall GraphQL_Cello; fi
-    - nohup sudo $PWD/GraphQL_Cello &
+    - sudo ezjail-admin stop violin-novnc
+    - sudo cp $PWD/violin-novnc /usr/jails/basejail/bin/
+    - sudo chmod 755 /usr/jails/basejail/bin/violin-novnc
+    - sudo ezjail-admin start violin-novnc &
     - echo "Finished"
-  only:
-  - master
+  # only:
+  # - master
 
