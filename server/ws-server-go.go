@@ -41,6 +41,6 @@ func (wsServer *WsServer) Listen(urlStr string, handlerFunc WsHandler) {
 	// err = http.ListenAndServe(url.Host, nil)
 	err = http.ListenAndServe(url.Host, nil)
 	if err != nil {
-		panic("ListenAndServe: " + err.Error())
+		logger.Logger.Println("ListenAndServe: " + err.Error())
 	}
 }
