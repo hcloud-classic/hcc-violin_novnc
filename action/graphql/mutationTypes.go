@@ -35,7 +35,7 @@ var mutationTypes = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				logger.Logger.Println("Resolving: schedule_nodes")
+				logger.Logger.Println("Resolving: control_vnc")
 				return driver.Runner(params)
 			},
 		},
