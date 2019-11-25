@@ -5,7 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"hcc/violin-novnc/dao"
-	"hcc/violin-novnc/logger"
+	"hcc/violin-novnc/lib/logger"
 	"hcc/violin-novnc/model"
 	"os"
 
@@ -29,13 +29,12 @@ func RunProcxy(params graphql.ResolveParams) {
 	targetVnc = params.Args["target_ip"].(string) + ":" + params.Args["target_port"].(string)
 	targetVncPass = params.Args["target_pass"].(string)
 	wsPort = params.Args["websocket_port"].(string)
-
 	//Not use
 	fmt.Println(recordDir, "   ", targetVnc, "    ", targetVncPass, "    ", wsPort)
+
 	var vncPass string
 	var targetVncPort string
 	var targetVncHost string
-	var logLevel string
 	var tcpPort string
 	// var wsPort = flag.String("wsPort", "", "websocket port")
 	// var targetVncPass = flag.String("targPass", "", "target vnc password")
@@ -47,23 +46,20 @@ func RunProcxy(params graphql.ResolveParams) {
 	// var targetVncPort = flag.String("targPort", "", "target vnc server port (deprecated, use -target)")
 	// var targetVncHost = flag.String("targHost", "", "target vnc server host (deprecated, use -target)")
 	// var logLevel = flag.String("logLevel", "info", "change logging level")
-	logLevel = "debug"
-	logger.SetLogLevel(logLevel)
 
 	if tcpPort == "" && wsPort == "" {
-		logger.Error("no listening port defined")
+		logger.Logger.Println("no listening port defined")
 		flag.Usage()
 		os.Exit(1)
 	}
 
 	if targetVnc == "" && targetVncPort == "" {
-		logger.Error("no target vnc server host/port or socket defined")
 		flag.Usage()
-		os.Exit(1)
+		return errors.New("no target vnc server host/port or socket defined")
 	}
 
 	if vncPass == "" {
-		logger.Warn("proxy will have no password")
+		logger.Logger.Println("proxy will have no password")
 	}
 
 	tcpURL := ""
@@ -96,11 +92,11 @@ func RunProcxy(params graphql.ResolveParams) {
 		// if err != nil {
 		// 	logger.Error("bad recording path: ", err)
 		// }
-		logger.Info("FBS recording is turned on, writing to dir: ", fullPath)
+		logger.Logger.Println("FBS recording is turned on, writing to dir: ", fullPath)
 		proxy.RecordingDir = fullPath
 		proxy.SingleSession.Type = vncproxy.SessionTypeRecordingProxy
 	} else {
-		logger.Info("FBS recording is turned off")
+		logger.Logger.Println("FBS recording is turned off")
 	}
 	proxy.StartListening()
 }
@@ -136,5 +132,4 @@ func Runner(params graphql.ResolveParams) (interface{}, error) {
 	result.Info = "Failed Please Choose Action"
 
 	return result, errors.New("[Violin-Novnc] : Please Choose Action")
-
 }

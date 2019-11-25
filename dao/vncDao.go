@@ -42,7 +42,7 @@ func FindAvailableWsPort() (interface{}, error) {
 		AvailablePort = strconv.Itoa(Port + 1)
 	}
 	if AvailablePort == "" {
-		AvailablePort = "5901"
+		AvailablePort = "5903"
 	}
 	return AvailablePort, nil
 
@@ -52,17 +52,12 @@ func FindAvailableWsPort() (interface{}, error) {
 // CreateVNC : VNC DB createS
 func CreateVNC(args map[string]interface{}) (interface{}, error) {
 	// fmt.Println("@@@params@@@\n", args["server_uuid"].(string), args["target_ip"].(string), args["target_port"].(string), args["websocket_port"].(string))
-	allocWsPort, errs := FindAvailableWsPort()
 	// fmt.Println("allocWsPort: ", allocWsPort)
-	if errs != nil {
-		logger.Logger.Println(errs)
-		return nil, errs
-	}
 	serverVnc := model.Vnc{
 		ServerUUID:     args["server_uuid"].(string),
 		TargetIP:       args["target_ip"].(string),
 		TargetPort:     args["target_port"].(string),
-		WebSocket:      allocWsPort.(string),
+		WebSocket:      args["websocket_port"].(string),
 		TargetPass:     "qwe1212",
 		ActionClassify: "Create",
 	}
