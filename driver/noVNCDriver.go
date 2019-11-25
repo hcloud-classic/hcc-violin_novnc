@@ -117,6 +117,9 @@ func Runner(params graphql.ResolveParams) (interface{}, error) {
 	result := model.Vnc{
 		ActionClassify: params.Args["action"].(string),
 	}
+
+	var vnc interface{}
+	var err error
 	if params.Args["action"].(string) != "" {
 		allocWsPort, errs := dao.FindAvailableWsPort()
 		if errs != nil {
@@ -127,24 +130,27 @@ func Runner(params graphql.ResolveParams) (interface{}, error) {
 		}
 
 		// fmt.Println("allocWsPort: ", allocWsPort, "result.WebSocket ", params.Args["websocket_port"])
+		switch params.Args["action"].(string) {
+		case "Create":
+			vnc, err = dao.CreateVNC(params.Args)
+			if err != nil {
+				return err, nil
+			}
+		case "Delete":
+		case "Update":
+		case "Info":
+		default:
+			result.Info = "Failed Please Choose Action"
+			return result, errors.New("[Violin-Novnc] : Please Choose Action")
+		}
+
 		go func() {
 			err := RunProcxy(params)
 			if err != nil {
 				logger.Logger.Println(err)
 			}
 		}()
-		switch params.Args["action"].(string) {
-		case "Create":
-			return dao.CreateVNC(params.Args)
-		case "Delete":
-		case "Update":
-		case "Info":
-		}
-
-	} else {
-
 	}
-	result.Info = "Failed Please Choose Action"
 
-	return result, errors.New("[Violin-Novnc] : Please Choose Action")
+	return vnc, nil
 }
