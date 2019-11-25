@@ -134,10 +134,9 @@ func Runner(params graphql.ResolveParams) (interface{}, error) {
 		switch params.Args["action"].(string) {
 		case "Create":
 			vnc, err = dao.CreateVNC(params.Args)
-			logger.Logger.Println(err)
-			//if err != nil {
-			//	return err, nil
-			//}
+			if err != nil {
+				return err, nil
+			}
 		case "Delete":
 		case "Update":
 		case "Info":
