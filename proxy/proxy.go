@@ -200,4 +200,6 @@ func (vp *VncProxy) StartListening() error {
 		logger.Infof("running tcp listener on port: %s", vp.TCPListeningURL)
 		server.TcpServe(vp.TCPListeningURL, cfg)
 	}
+
+	return nil
 }
