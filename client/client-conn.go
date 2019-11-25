@@ -8,8 +8,8 @@ import (
 	"net"
 	"unicode"
 
-	"github.com/amitbet/vncproxy/common"
 	"github.com/amitbet/vncproxy/logger"
+	"hcc/violin-novnc/common"
 )
 
 // A ServerMessage implements a message sent from the server to the client.

@@ -2,7 +2,7 @@ package encodings
 
 import (
 	"bytes"
-	"github.com/amitbet/vncproxy/common"
+	"hcc/violin-novnc/common"
 	"io"
 )
 

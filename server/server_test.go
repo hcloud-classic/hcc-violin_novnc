@@ -4,8 +4,8 @@ import (
 	"log"
 	"testing"
 
-	"github.com/amitbet/vncproxy/common"
-	"github.com/amitbet/vncproxy/encodings"
+	"hcc/violin-novnc/common"
+	"hcc/violin-novnc/encodings"
 )
 
 func newServerConnHandler(cfg *ServerConfig, conn *ServerConn) error {

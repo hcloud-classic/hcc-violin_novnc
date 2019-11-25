@@ -3,9 +3,9 @@ package recorder
 import (
 	"bytes"
 	"encoding/binary"
-	"github.com/amitbet/vncproxy/common"
 	"github.com/amitbet/vncproxy/logger"
-	"github.com/amitbet/vncproxy/server"
+	"hcc/violin-novnc/common"
+	"hcc/violin-novnc/server"
 	"os"
 	"time"
 )

@@ -2,13 +2,13 @@ package proxy
 
 import (
 	"fmt"
-	"github.com/amitbet/vncproxy/client"
-	"github.com/amitbet/vncproxy/common"
-	"github.com/amitbet/vncproxy/encodings"
 	"github.com/amitbet/vncproxy/logger"
-	"github.com/amitbet/vncproxy/player"
-	listeners "github.com/amitbet/vncproxy/recorder"
-	"github.com/amitbet/vncproxy/server"
+	"hcc/violin-novnc/client"
+	"hcc/violin-novnc/common"
+	"hcc/violin-novnc/encodings"
+	"hcc/violin-novnc/player"
+	listeners "hcc/violin-novnc/recorder"
+	"hcc/violin-novnc/server"
 	"net"
 	"path"
 )

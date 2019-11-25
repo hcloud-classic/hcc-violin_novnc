@@ -6,7 +6,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/amitbet/vncproxy/common"
+	"hcc/violin-novnc/common"
 )
 
 var DefaultClientMessages = []common.ClientMessage{

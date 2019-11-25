@@ -3,7 +3,7 @@ package server
 import (
 	"encoding/binary"
 	"fmt"
-	"github.com/amitbet/vncproxy/common"
+	"hcc/violin-novnc/common"
 
 	"github.com/amitbet/vncproxy/logger"
 	"io"

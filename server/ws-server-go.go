@@ -1,6 +1,7 @@
 package server
 
 import (
+	logger2 "hcc/violin-novnc/lib/logger"
 	"io"
 	"net/http"
 	"net/url"
@@ -41,6 +42,6 @@ func (wsServer *WsServer) Listen(urlStr string, handlerFunc WsHandler) {
 	// err = http.ListenAndServe(url.Host, nil)
 	err = http.ListenAndServe(url.Host, nil)
 	if err != nil {
-		logger.Logger.Println("ListenAndServe: " + err.Error())
+		logger2.Logger.Println("ListenAndServe: " + err.Error())
 	}
 }

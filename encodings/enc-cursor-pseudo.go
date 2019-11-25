@@ -1,7 +1,7 @@
 package encodings
 
 import (
-	"github.com/amitbet/vncproxy/common"
+	"hcc/violin-novnc/common"
 	"io"
 	"math"
 )

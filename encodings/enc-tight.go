@@ -3,8 +3,8 @@ package encodings
 import (
 	"bytes"
 	"errors"
-	"github.com/amitbet/vncproxy/common"
 	"github.com/amitbet/vncproxy/logger"
+	"hcc/violin-novnc/common"
 	"io"
 )
 

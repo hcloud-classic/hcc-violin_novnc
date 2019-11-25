@@ -5,7 +5,7 @@ import (
 	"crypto/des"
 	"crypto/rand"
 	"errors"
-	"github.com/amitbet/vncproxy/common"
+	"hcc/violin-novnc/common"
 	"log"
 )
 

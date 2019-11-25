@@ -10,8 +10,8 @@ import (
 	"os"
 	"time"
 
-	vncproxy "github.com/amitbet/vncproxy/proxy"
 	"github.com/graphql-go/graphql"
+	vncproxy "hcc/violin-novnc/proxy"
 )
 
 //**node scheduling argument */
@@ -160,7 +160,7 @@ func Runner(params graphql.ResolveParams) (interface{}, error) {
 				done <- nil
 			}
 		}(err)
-		resultErr := <- done
+		resultErr := <-done
 		if resultErr != nil {
 			return nil, resultErr
 		}

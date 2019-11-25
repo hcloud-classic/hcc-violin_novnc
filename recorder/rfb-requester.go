@@ -1,9 +1,9 @@
 package recorder
 
 import (
-	"github.com/amitbet/vncproxy/client"
-	"github.com/amitbet/vncproxy/common"
 	"github.com/amitbet/vncproxy/logger"
+	"hcc/violin-novnc/client"
+	"hcc/violin-novnc/common"
 	"time"
 )
 

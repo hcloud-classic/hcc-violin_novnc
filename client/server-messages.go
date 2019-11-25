@@ -4,9 +4,9 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
-	"github.com/amitbet/vncproxy/common"
-	"github.com/amitbet/vncproxy/encodings"
 	"github.com/amitbet/vncproxy/logger"
+	"hcc/violin-novnc/common"
+	"hcc/violin-novnc/encodings"
 	"io"
 	"strings"
 )

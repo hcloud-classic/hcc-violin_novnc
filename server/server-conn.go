@@ -6,8 +6,8 @@ import (
 	"io"
 	"sync"
 
-	"github.com/amitbet/vncproxy/common"
 	"github.com/amitbet/vncproxy/logger"
+	"hcc/violin-novnc/common"
 )
 
 type ServerConn struct {

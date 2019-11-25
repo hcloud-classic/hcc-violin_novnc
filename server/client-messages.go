@@ -2,7 +2,7 @@ package server
 
 import (
 	"encoding/binary"
-	"github.com/amitbet/vncproxy/common"
+	"hcc/violin-novnc/common"
 	"io"
 )
 

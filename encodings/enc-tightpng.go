@@ -2,8 +2,8 @@ package encodings
 
 import (
 	"fmt"
-	"github.com/amitbet/vncproxy/common"
 	"github.com/amitbet/vncproxy/logger"
+	"hcc/violin-novnc/common"
 	"io"
 )
 

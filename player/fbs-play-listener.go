@@ -3,10 +3,10 @@ package player
 import (
 	"encoding/binary"
 
-	"github.com/amitbet/vncproxy/client"
-	"github.com/amitbet/vncproxy/common"
 	"github.com/amitbet/vncproxy/logger"
-	"github.com/amitbet/vncproxy/server"
+	"hcc/violin-novnc/client"
+	"hcc/violin-novnc/common"
+	"hcc/violin-novnc/server"
 	"io"
 	"time"
 )
