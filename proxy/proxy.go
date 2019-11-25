@@ -165,7 +165,7 @@ func (vp *VncProxy) newServerConnHandler(cfg *server.ServerConfig, sconn *server
 	return nil
 }
 
-func (vp *VncProxy) StartListening() {
+func (vp *VncProxy) StartListening() error {
 
 	secHandlers := []server.SecurityHandler{&server.ServerAuthNone{}}
 

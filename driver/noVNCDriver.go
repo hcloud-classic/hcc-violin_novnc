@@ -8,6 +8,7 @@ import (
 	"hcc/violin-novnc/lib/logger"
 	"hcc/violin-novnc/model"
 	"os"
+	"time"
 
 	vncproxy "github.com/amitbet/vncproxy/proxy"
 	"github.com/graphql-go/graphql"
@@ -144,12 +145,25 @@ func Runner(params graphql.ResolveParams) (interface{}, error) {
 			return result, errors.New("[Violin-Novnc] : Please Choose Action")
 		}
 
-		go func() {
-			err := RunProcxy(params)
-			if err != nil {
-				logger.Logger.Println(err)
+		done := make(chan error)
+		var err error
+		go func(err error) {
+			go func() {
+				err = RunProcxy(params)
+				if err != nil {
+					logger.Logger.Println(err)
+					done <- err
+				}
+			}()
+			if err == nil {
+				time.Sleep(time.Second * 5)
+				done <- nil
 			}
-		}()
+		}(err)
+		resultErr := <- done
+		if resultErr != nil {
+			return nil, resultErr
+		}
 	}
 
 	return vnc, nil
