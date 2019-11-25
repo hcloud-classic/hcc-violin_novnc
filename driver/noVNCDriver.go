@@ -17,7 +17,7 @@ import (
 // cpu, mem, end of bmc ip address
 
 //RunProcxy :RunProcxy
-func RunProcxy(params graphql.ResolveParams, wsURL string) {
+func RunProcxy(params graphql.ResolveParams) error {
 	//create default session if required
 	// recorddir string, target string, targPass string, wsport string
 	var recordDir string
@@ -28,19 +28,20 @@ func RunProcxy(params graphql.ResolveParams, wsURL string) {
 	targetVnc = params.Args["target_ip"].(string) + ":" + params.Args["target_port"].(string)
 	targetVncPass = params.Args["target_pass"].(string)
 	wsPort = params.Args["websocket_port"].(string)
+	wsURL := "http://0.0.0.0:" + wsPort + "/" + params.Args["server_uuid"].(string) + "_" + wsPort
 	//Not use
 	fmt.Println(recordDir, "   ", targetVnc, "    ", targetVncPass, "    ", wsPort)
 
 	err := logger.CreateDirIfNotExist("/var/log/violin-novnc/recordings/")
 	if err != nil {
 		logger.Logger.Println(err)
-		return
+		return err
 	}
 
 	err = logger.CreateDirIfNotExist(recordDir)
 	if err != nil {
 		logger.Logger.Println(err)
-		return
+		return err
 	}
 
 	var vncPass string
@@ -66,8 +67,9 @@ func RunProcxy(params graphql.ResolveParams, wsURL string) {
 
 	if targetVnc == "" && targetVncPort == "" {
 		flag.Usage()
-		logger.Logger.Println("no target vnc server host/port or socket defined")
-		return
+		err := errors.New("no target vnc server host/port or socket defined")
+		logger.Logger.Println(err)
+		return err
 	}
 
 	if vncPass == "" {
@@ -107,6 +109,8 @@ func RunProcxy(params graphql.ResolveParams, wsURL string) {
 		logger.Logger.Println("FBS recording is turned off")
 	}
 	proxy.StartListening()
+
+	return nil
 }
 
 var mutex = &sync.Mutex{}
@@ -118,6 +122,8 @@ func Runner(params graphql.ResolveParams) (interface{}, error) {
 
 	var err error
 	if params.Args["action"].(string) != "" {
+		mutex.Lock()
+
 		allocWsPort, errs := dao.FindAvailableWsPort()
 		if errs != nil {
 			vnc.Info = "Web Socket Not found"
@@ -125,11 +131,11 @@ func Runner(params graphql.ResolveParams) (interface{}, error) {
 		} else {
 			vnc.WebSocket = allocWsPort.(string)
 		}
+		params.Args["websocket_port"] = vnc.WebSocket
 
 		// fmt.Println("allocWsPort: ", allocWsPort, "result.WebSocket ", params.Args["websocket_port"])
 		switch params.Args["action"].(string) {
 		case "Create":
-			params.Args["websocket_port"] = vnc.WebSocket
 			vnc, err = dao.CreateVNC(params.Args)
 			if err != nil {
 				return err, nil
@@ -145,13 +151,15 @@ func Runner(params graphql.ResolveParams) (interface{}, error) {
 		// TODO
 		// Need to close server when exit popup
 
-		wsURL := "http://0.0.0.0:" + vnc.WebSocket + "/" + params.Args["server_uuid"].(string) + "_" + vnc.WebSocket
-		go func() {
-			mutex.Lock()
-			RunProcxy(params, wsURL)
-			mutex.Unlock()
-		}()
+		go func(params graphql.ResolveParams) {
+			fmt.Println("websocket_port", params.Args["websocket_port"])
+			var p = params
+			_ = RunProcxy(p)
+		}(params)
+
+		mutex.Unlock()
 	}
+
 
 	return vnc, nil
 }
