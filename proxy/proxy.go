@@ -2,11 +2,6 @@ package proxy
 
 import (
 	"fmt"
-	"net"
-	"path"
-	"strconv"
-	"time"
-
 	"github.com/amitbet/vncproxy/client"
 	"github.com/amitbet/vncproxy/common"
 	"github.com/amitbet/vncproxy/encodings"
@@ -14,6 +9,8 @@ import (
 	"github.com/amitbet/vncproxy/player"
 	listeners "github.com/amitbet/vncproxy/recorder"
 	"github.com/amitbet/vncproxy/server"
+	"net"
+	"path"
 )
 
 type VncProxy struct {
@@ -83,7 +80,7 @@ func (vp *VncProxy) newServerConnHandler(cfg *server.ServerConfig, sconn *server
 	var rec *listeners.Recorder
 
 	if session.Type == SessionTypeRecordingProxy {
-		recFile := "recording" + strconv.FormatInt(time.Now().Unix(), 10) + ".rbs"
+		recFile := "recording.rbs"
 		recPath := path.Join(vp.RecordingDir, recFile)
 		rec, err = listeners.NewRecorder(recPath)
 		if err != nil {
