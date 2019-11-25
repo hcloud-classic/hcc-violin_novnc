@@ -17,7 +17,7 @@ import (
 // cpu, mem, end of bmc ip address
 
 //RunProcxy :RunProcxy
-func RunProcxy(params graphql.ResolveParams) {
+func RunProcxy(params graphql.ResolveParams) error {
 
 	//create default session if required
 	// recorddir string, target string, targPass string, wsport string
@@ -31,6 +31,16 @@ func RunProcxy(params graphql.ResolveParams) {
 	wsPort = params.Args["websocket_port"].(string)
 	//Not use
 	fmt.Println(recordDir, "   ", targetVnc, "    ", targetVncPass, "    ", wsPort)
+
+	err := logger.CreateDirIfNotExist("/var/log/violin-novnc/recordings/")
+	if err != nil {
+		return err
+	}
+
+	err = logger.CreateDirIfNotExist(recordDir)
+	if err != nil {
+		return err
+	}
 
 	var vncPass string
 	var targetVncPort string
@@ -99,6 +109,8 @@ func RunProcxy(params graphql.ResolveParams) {
 		logger.Logger.Println("FBS recording is turned off")
 	}
 	proxy.StartListening()
+
+	return nil
 }
 
 func Runner(params graphql.ResolveParams) (interface{}, error) {
@@ -116,7 +128,10 @@ func Runner(params graphql.ResolveParams) (interface{}, error) {
 
 		// fmt.Println("allocWsPort: ", allocWsPort, "result.WebSocket ", params.Args["websocket_port"])
 		go func() {
-			RunProcxy(params)
+			err := RunProcxy(params)
+			if err != nil {
+				logger.Logger.Println(err)
+			}
 		}()
 		switch params.Args["action"].(string) {
 		case "Create":
