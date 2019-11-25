@@ -10,7 +10,7 @@ import (
 )
 
 // LogName : Log folder name. Also used as log prefix.
-var LogName = "violin-scheduler"
+var LogName = "violin-novnc"
 
 // Logger : Pointer of logger
 var Logger *log.Logger
