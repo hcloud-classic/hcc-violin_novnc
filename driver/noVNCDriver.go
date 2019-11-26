@@ -150,19 +150,19 @@ func Runner(params graphql.ResolveParams) (interface{}, error) {
 
 		done := make(chan error)
 		var err error
-		go func(err error) {
-			go func() {
+		go func(params graphql.ResolveParams, err error) {
+			go func(params graphql.ResolveParams) {
 				err = RunProcxy(params)
 				if err != nil {
 					logger.Logger.Println(err)
 					done <- err
 				}
-			}()
+			}(params)
 			if err == nil {
 				time.Sleep(time.Second * 5)
 				done <- nil
 			}
-		}(err)
+		}(params, err)
 		resultErr := <-done
 		if resultErr != nil {
 			return nil, resultErr
