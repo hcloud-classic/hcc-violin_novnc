@@ -48,10 +48,10 @@ build:
   stage: build
   script:
     - gmake
-    - sudo /usr/sbin/service violin-novnc stop
-    - sudo cp $PWD/violin-novnc /bin/violin-novnc
-    - sudo chmod 755 /bin/violin-novnc
-    - sudo /usr/sbin/service violin-novnc start
+    - sudo /usr/sbin/service violin_novnc stop
+    - sudo cp $PWD/violin_novnc /bin/violin_novnc
+    - sudo chmod 755 /bin/violin_novnc
+    - sudo /usr/sbin/service violin_novnc start
     - echo "Finished"
 #  only:
 #  - master

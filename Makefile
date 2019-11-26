@@ -1,5 +1,5 @@
 ROOT_PROJECT_NAME := "hcc"
-PROJECT_NAME := "violin-novnc"
+PROJECT_NAME := "violin_novnc"
 PKG_LIST := $(shell go list ${ROOT_PROJECT_NAME}/${PROJECT_NAME}/...)
 
 .PHONY: all build docker clean gofmt goreport goreport_deb test coverage coverhtml lint
