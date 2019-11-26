@@ -115,24 +115,24 @@ func RunProcxy(params graphql.ResolveParams) error {
 }
 
 func Runner(params graphql.ResolveParams) (interface{}, error) {
-	result := model.Vnc{
+	vnc := model.Vnc{
 		ActionClassify: params.Args["action"].(string),
 	}
 
-	var vnc interface{}
 	var err error
 	if params.Args["action"].(string) != "" {
 		allocWsPort, errs := dao.FindAvailableWsPort()
 		if errs != nil {
-			result.Info = "Web Socket Not found"
-			return result, nil
+			vnc.Info = "Web Socket Not found"
+			return vnc, nil
 		} else {
-			params.Args["websocket_port"] = allocWsPort.(string)
+			vnc.WebSocket = allocWsPort.(string)
 		}
 
 		// fmt.Println("allocWsPort: ", allocWsPort, "result.WebSocket ", params.Args["websocket_port"])
 		switch params.Args["action"].(string) {
 		case "Create":
+			params.Args["websocket_port"] = vnc.WebSocket
 			vnc, err = dao.CreateVNC(params.Args)
 			if err != nil {
 				return err, nil
@@ -141,9 +141,12 @@ func Runner(params graphql.ResolveParams) (interface{}, error) {
 		case "Update":
 		case "Info":
 		default:
-			result.Info = "Failed Please Choose Action"
-			return result, errors.New("[Violin-Novnc] : Please Choose Action")
+			vnc.Info = "Failed Please Choose Action"
+			return vnc, errors.New("[Violin-Novnc] : Please Choose Action")
 		}
+
+		// TODO
+		// Need to close server when exit popup
 
 		done := make(chan error)
 		var err error

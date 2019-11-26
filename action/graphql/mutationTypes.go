@@ -27,9 +27,6 @@ var mutationTypes = graphql.NewObject(graphql.ObjectConfig{
 				"target_pass": &graphql.ArgumentConfig{
 					Type: graphql.String,
 				},
-				"websocket_port": &graphql.ArgumentConfig{
-					Type: graphql.String,
-				},
 				"action": &graphql.ArgumentConfig{
 					Type: graphql.String,
 				},

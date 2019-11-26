@@ -42,7 +42,7 @@ func FindAvailableWsPort() (interface{}, error) {
 		AvailablePort = strconv.Itoa(Port + 1)
 	}
 	if AvailablePort == "" {
-		AvailablePort = "5903"
+		AvailablePort = "5901"
 	}
 	return AvailablePort, nil
 
@@ -50,10 +50,11 @@ func FindAvailableWsPort() (interface{}, error) {
 }
 
 // CreateVNC : VNC DB createS
-func CreateVNC(args map[string]interface{}) (interface{}, error) {
+func CreateVNC(args map[string]interface{}) (model.Vnc, error) {
 	// fmt.Println("@@@params@@@\n", args["server_uuid"].(string), args["target_ip"].(string), args["target_port"].(string), args["websocket_port"].(string))
 	// fmt.Println("allocWsPort: ", allocWsPort)
-	serverVnc := model.Vnc{
+	var serverVnc model.Vnc
+	serverVnc = model.Vnc{
 		ServerUUID:     args["server_uuid"].(string),
 		TargetIP:       args["target_ip"].(string),
 		TargetPort:     args["target_port"].(string),
@@ -66,7 +67,7 @@ func CreateVNC(args map[string]interface{}) (interface{}, error) {
 
 	if err != nil {
 		logger.Logger.Println(err)
-		return nil, err
+		return serverVnc, err
 	}
 	defer func() {
 		_ = stmt.Close()
@@ -76,7 +77,7 @@ func CreateVNC(args map[string]interface{}) (interface{}, error) {
 
 	if err != nil {
 		logger.Logger.Println("DB Insert Error", err)
-		return nil, err
+		return serverVnc, err
 	}
 	logger.Logger.Println(result.LastInsertId())
 	serverVnc.Info = "Created"
