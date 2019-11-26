@@ -4,21 +4,19 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/graphql-go/graphql"
 	"hcc/violin-novnc/dao"
 	"hcc/violin-novnc/lib/logger"
 	"hcc/violin-novnc/model"
-	"os"
-	"time"
-
-	"github.com/graphql-go/graphql"
 	vncproxy "hcc/violin-novnc/proxy"
+	"os"
 )
 
 //**node scheduling argument */
 // cpu, mem, end of bmc ip address
 
 //RunProcxy :RunProcxy
-func RunProcxy(params graphql.ResolveParams, wsURL string) error {
+func RunProcxy(params graphql.ResolveParams, wsURL string) {
 
 	//create default session if required
 	// recorddir string, target string, targPass string, wsport string
@@ -145,22 +143,11 @@ func Runner(params graphql.ResolveParams) (interface{}, error) {
 		// Need to close server when exit popup
 
 		done := make(chan error)
-		var err error
 		wsURL := "http://0.0.0.0:" + vnc.WebSocket + "/" + params.Args["server_uuid"].(string) + "_" + vnc.WebSocket
 		vnc.WsURL = wsURL
-		go func(params graphql.ResolveParams, err error) {
-			go func(params graphql.ResolveParams) {
-				err = RunProcxy(params, wsURL)
-				if err != nil {
-					logger.Logger.Println(err)
-					done <- err
-				}
-			}(params)
-			if err == nil {
-				time.Sleep(time.Second * 5)
-				done <- nil
-			}
-		}(params, err)
+		go func() {
+			RunProcxy(params, wsURL)
+		}()
 		resultErr := <-done
 		if resultErr != nil {
 			return nil, resultErr
