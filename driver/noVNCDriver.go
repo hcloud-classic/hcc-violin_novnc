@@ -18,7 +18,7 @@ import (
 // cpu, mem, end of bmc ip address
 
 //RunProcxy :RunProcxy
-func RunProcxy(params graphql.ResolveParams) error {
+func RunProcxy(params graphql.ResolveParams, wsURL string) error {
 
 	//create default session if required
 	// recorddir string, target string, targPass string, wsport string
@@ -75,13 +75,9 @@ func RunProcxy(params graphql.ResolveParams) error {
 
 	tcpURL := ""
 	if tcpPort != "" {
-		tcpURL = ":" + string(tcpPort)
+		tcpURL = ":" + tcpPort
 	}
-	wsURL := ""
-	if wsPort != "" {
-		wsURL = "http://0.0.0.0:" + string(wsPort) + "/" + params.Args["server_uuid"].(string)
-		// wsURL = "http://0.0.0.0:" + string(wsPort) + "/"
-	}
+
 	proxy := &vncproxy.VncProxy{
 		WsListeningURL:   wsURL, // empty = not listening on ws
 		TCPListeningURL:  tcpURL,
@@ -150,9 +146,11 @@ func Runner(params graphql.ResolveParams) (interface{}, error) {
 
 		done := make(chan error)
 		var err error
+		wsURL := "http://0.0.0.0:" + vnc.WebSocket + "/" + params.Args["server_uuid"].(string) + "_" + vnc.WebSocket
+		vnc.WsURL = wsURL
 		go func(params graphql.ResolveParams, err error) {
 			go func(params graphql.ResolveParams) {
-				err = RunProcxy(params)
+				err = RunProcxy(params, wsURL)
 				if err != nil {
 					logger.Logger.Println(err)
 					done <- err
