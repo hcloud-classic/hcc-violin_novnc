@@ -17,7 +17,6 @@ import (
 
 //RunProcxy :RunProcxy
 func RunProcxy(params graphql.ResolveParams, wsURL string) {
-
 	//create default session if required
 	// recorddir string, target string, targPass string, wsport string
 	var recordDir string
@@ -33,12 +32,14 @@ func RunProcxy(params graphql.ResolveParams, wsURL string) {
 
 	err := logger.CreateDirIfNotExist("/var/log/violin-novnc/recordings/")
 	if err != nil {
-		return err
+		logger.Logger.Println(err)
+		return
 	}
 
 	err = logger.CreateDirIfNotExist(recordDir)
 	if err != nil {
-		return err
+		logger.Logger.Println(err)
+		return
 	}
 
 	var vncPass string
@@ -64,7 +65,8 @@ func RunProcxy(params graphql.ResolveParams, wsURL string) {
 
 	if targetVnc == "" && targetVncPort == "" {
 		flag.Usage()
-		return errors.New("no target vnc server host/port or socket defined")
+		logger.Logger.Println("no target vnc server host/port or socket defined")
+		return
 	}
 
 	if vncPass == "" {
@@ -73,7 +75,7 @@ func RunProcxy(params graphql.ResolveParams, wsURL string) {
 
 	tcpURL := ""
 	if tcpPort != "" {
-		tcpURL = ":" + tcpPort
+		tcpURL = ":" + string(tcpPort)
 	}
 
 	proxy := &vncproxy.VncProxy{
@@ -104,8 +106,6 @@ func RunProcxy(params graphql.ResolveParams, wsURL string) {
 		logger.Logger.Println("FBS recording is turned off")
 	}
 	proxy.StartListening()
-
-	return nil
 }
 
 func Runner(params graphql.ResolveParams) (interface{}, error) {
@@ -142,16 +142,10 @@ func Runner(params graphql.ResolveParams) (interface{}, error) {
 		// TODO
 		// Need to close server when exit popup
 
-		done := make(chan error)
 		wsURL := "http://0.0.0.0:" + vnc.WebSocket + "/" + params.Args["server_uuid"].(string) + "_" + vnc.WebSocket
-		vnc.WsURL = wsURL
 		go func() {
 			RunProcxy(params, wsURL)
 		}()
-		resultErr := <-done
-		if resultErr != nil {
-			return nil, resultErr
-		}
 	}
 
 	return vnc, nil

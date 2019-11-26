@@ -24,9 +24,6 @@ var VncNodeType = graphql.NewObject(
 			"websocket_port": &graphql.Field{
 				Type: graphql.String,
 			},
-			"ws_url": &graphql.Field{
-				Type: graphql.String,
-			},
 			"vnc_info": &graphql.Field{
 				Type: graphql.String,
 			},
