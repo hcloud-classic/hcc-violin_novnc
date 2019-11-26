@@ -20,15 +20,14 @@ import (
 func RunProcxy(params graphql.ResolveParams) error {
 	//create default session if required
 	// recorddir string, target string, targPass string, wsport string
-	var recordDir string
 	var targetVnc string
 	var targetVncPass string
 	var wsPort string
-	recordDir = "/var/log/violin-novnc/recordings/" + params.Args["server_uuid"].(string)
 	targetVnc = params.Args["target_ip"].(string) + ":" + params.Args["target_port"].(string)
 	targetVncPass = params.Args["target_pass"].(string)
 	wsPort = params.Args["websocket_port"].(string)
 	wsURL := "http://0.0.0.0:" + wsPort + "/" + params.Args["server_uuid"].(string) + "_" + wsPort
+	recordDir := "/var/log/violin-novnc/recordings/" + params.Args["server_uuid"].(string) + "_" + wsPort
 	//Not use
 	fmt.Println(recordDir, "   ", targetVnc, "    ", targetVncPass, "    ", wsPort)
 
