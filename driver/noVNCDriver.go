@@ -10,6 +10,7 @@ import (
 	"hcc/violin-novnc/model"
 	vncproxy "hcc/violin-novnc/proxy"
 	"os"
+	"sync"
 )
 
 //**node scheduling argument */
@@ -108,6 +109,8 @@ func RunProcxy(params graphql.ResolveParams, wsURL string) {
 	proxy.StartListening()
 }
 
+var mutex = &sync.Mutex{}
+
 func Runner(params graphql.ResolveParams) (interface{}, error) {
 	vnc := model.Vnc{
 		ActionClassify: params.Args["action"].(string),
@@ -144,7 +147,9 @@ func Runner(params graphql.ResolveParams) (interface{}, error) {
 
 		wsURL := "http://0.0.0.0:" + vnc.WebSocket + "/" + params.Args["server_uuid"].(string) + "_" + vnc.WebSocket
 		go func() {
+			mutex.Lock()
 			RunProcxy(params, wsURL)
+			mutex.Unlock()
 		}()
 	}
 
