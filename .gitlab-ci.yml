@@ -48,10 +48,10 @@ build:
   stage: build
   script:
     - gmake
-    - sudo ezjail-admin stop violin-novnc
-    - sudo cp $PWD/violin-novnc /usr/jails/basejail/bin/
-    - sudo chmod 755 /usr/jails/basejail/bin/violin-novnc
-    - sudo ezjail-admin start violin-novnc &
+    - sudo /usr/sbin/service violin-novnc stop
+    - sudo cp $PWD/violin-novnc /bin/violin-novnc
+    - sudo chmod 755 /bin/violin-novnc
+    - sudo /usr/sbin/service violin-novnc start
     - echo "Finished"
 #  only:
 #  - master
