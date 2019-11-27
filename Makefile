@@ -1,8 +1,9 @@
 ROOT_PROJECT_NAME := "hcc"
-PROJECT_NAME := "violin_novnc"
+PROJECT_NAME := "violin-novnc"
+BINARY_NAME := "violin_novnc"
 PKG_LIST := $(shell go list ${ROOT_PROJECT_NAME}/${PROJECT_NAME}/...)
 
-.PHONY: all build docker clean gofmt goreport goreport_deb test coverage coverhtml lint
+.PHONY: all build clean gofmt goreport goreport_deb test coverage coverhtml lint
 
 all: build
 
@@ -47,15 +48,10 @@ goreport: goreport_dep ## Make goreport
 	@./hcloud-badge/hcloud_badge.sh $(PROJECT_NAME)
 
 build: ## Build the binary file
-	@$(GOROOT)/bin/go build -o $(PROJECT_NAME) main.go
-
-docker: ## Build docker image and push it to private docker registry
-	@sudo docker build -t $(PROJECT_NAME) .
-	@sudo docker tag ${ROOT_PROJECT_NAME}_$(PROJECT_NAME):latest 192.168.110.250:5000/$(PROJECT_NAME):latest
-	@sudo docker push 192.168.110.250:5000/$(PROJECT_NAME):latest
+	@$(GOROOT)/bin/go build -o $(BINARY_NAME) main.go
 
 clean: ## Remove previous build
-	@rm -f $(PROJECT_NAME)
+	@rm -f $(BINARY_NAME)
 
 help: ## Display this help screen
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
