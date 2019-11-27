@@ -27,21 +27,22 @@ func RunProcxy(params graphql.ResolveParams) error {
 	targetVncPass = params.Args["target_pass"].(string)
 	wsPort = params.Args["websocket_port"].(string)
 	wsURL := "http://0.0.0.0:" + wsPort + "/" + params.Args["server_uuid"].(string) + "_" + wsPort
-	recordDir := "/var/log/violin-novnc/recordings/" + params.Args["server_uuid"].(string) + "_" + wsPort
+	//recordDir := "/var/log/violin-novnc/recordings/" + params.Args["server_uuid"].(string) + "_" + wsPort
+	recordDir := ""
 	//Not use
 	fmt.Println(recordDir, "   ", targetVnc, "    ", targetVncPass, "    ", wsPort)
 
-	err := logger.CreateDirIfNotExist("/var/log/violin-novnc/recordings/")
-	if err != nil {
-		logger.Logger.Println(err)
-		return err
-	}
+	//err := logger.CreateDirIfNotExist("/var/log/violin-novnc/recordings/")
+	//if err != nil {
+	//	logger.Logger.Println(err)
+	//	return err
+	//}
 
-	err = logger.CreateDirIfNotExist(recordDir)
-	if err != nil {
-		logger.Logger.Println(err)
-		return err
-	}
+	// err = logger.CreateDirIfNotExist(recordDir)
+	// if err != nil {
+	// 	logger.Logger.Println(err)
+	// 	return err
+	// }
 
 	var vncPass string
 	var targetVncPort string
@@ -158,7 +159,6 @@ func Runner(params graphql.ResolveParams) (interface{}, error) {
 
 		mutex.Unlock()
 	}
-
 
 	return vnc, nil
 }
