@@ -2,8 +2,8 @@ package server
 
 import (
 	"fmt"
+	"hcc/violin-novnc/lib/logger"
 	"io"
-	"log"
 	"net"
 
 	"hcc/violin-novnc/common"
@@ -47,7 +47,7 @@ type ServerConfig struct {
 func wsHandlerFunc(ws io.ReadWriter, cfg *ServerConfig, sessionId string) {
 	err := attachNewServerConn(ws, cfg, sessionId)
 	if err != nil {
-		log.Fatalf("Error attaching new connection. %v", err)
+		logger.Logger.Println("Error attaching new connection. " + err.Error())
 	}
 }
 
@@ -60,7 +60,8 @@ func WsServe(url string, cfg *ServerConfig) error {
 func TcpServe(url string, cfg *ServerConfig) error {
 	ln, err := net.Listen("tcp", url)
 	if err != nil {
-		log.Fatalf("Error listen. %v", err)
+		logger.Logger.Println("Error listen. " + err.Error())
+		return err
 	}
 	for {
 		c, err := ln.Accept()
