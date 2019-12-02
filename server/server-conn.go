@@ -183,7 +183,7 @@ func (c *ServerConn) handle() error {
 			switch parsedMsg.Type() {
 			case common.SetPixelFormatMsgType:
 				// update pixel format
-				logger.Logger.Println("ClientUpdater.Consume: updating pixel format")
+				//logger.Logger.Println("ClientUpdater.Consume: updating pixel format")
 				pixFmtMsg := parsedMsg.(*MsgSetPixelFormat)
 				c.SetPixelFormat(&pixFmtMsg.PF)
 				if pixFmtMsg.PF.TrueColor != 0 {
@@ -197,7 +197,7 @@ func (c *ServerConn) handle() error {
 				return err
 			}
 
-			logger.Logger.Printf("IServerConn.Handle got ClientMessage: %s, %v", parsedMsg.Type(), parsedMsg)
+			//logger.Logger.Printf("IServerConn.Handle got ClientMessage: %s, %v", parsedMsg.Type(), parsedMsg)
 			//TODO: treat set encodings by allowing only supported encoding in proxy configurations
 			//// if parsedMsg.Type() == common.SetEncodingsMsgType{
 			//// 	c.cfg.Encodings

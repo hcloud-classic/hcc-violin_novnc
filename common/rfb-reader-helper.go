@@ -123,7 +123,7 @@ func (r *RfbReadHelper) Read(p []byte) (n int, err error) {
 	// prevlen = len(p)
 	/////////
 
-	logger.Logger.Printf("RfbReadHelper.Read: publishing bytes, bytes:%v", p[:readLen])
+	//logger.Logger.Printf("RfbReadHelper.Read: publishing bytes, bytes:%v", p[:readLen])
 
 	//write the bytes to the Listener for further processing
 	seg := &RfbSegment{Bytes: p[:readLen], SegmentType: SegmentBytes}
@@ -209,7 +209,7 @@ func (r *RfbReadHelper) ReadTightData(dataSize int) ([]byte, error) {
 		return r.ReadBytes(int(dataSize))
 	}
 	zlibDataLen, err := r.ReadCompactLen()
-	logger.Logger.Printf("RfbReadHelper.ReadTightData: compactlen=%d", zlibDataLen)
+	//logger.Logger.Printf("RfbReadHelper.ReadTightData: compactlen=%d", zlibDataLen)
 	if err != nil {
 		return nil, err
 	}

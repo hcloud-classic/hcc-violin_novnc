@@ -63,7 +63,7 @@ func (handler *FBSPlayListener) Consume(seg *common.RfbSegment) error {
 	switch seg.SegmentType {
 	case common.SegmentFullyParsedClientMessage:
 		clientMsg := seg.Message.(common.ClientMessage)
-		logger.Logger.Printf("ClientUpdater.Consume:(vnc-server-bound) got ClientMessage type=%s", clientMsg.Type())
+		//logger.Logger.Printf("ClientUpdater.Consume:(vnc-server-bound) got ClientMessage type=%s", clientMsg.Type())
 		switch clientMsg.Type() {
 
 		case common.FramebufferUpdateRequestMsgType:

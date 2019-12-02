@@ -63,11 +63,11 @@ func (fbm *MsgFramebufferUpdate) Read(c common.IClientConn, r *common.RfbReadHel
 	// We must always support the raw encoding
 	rawEnc := new(encodings.RawEncoding)
 	encMap[rawEnc.Type()] = rawEnc
-	logger.Logger.Printf("MsgFramebufferUpdate.Read: numrects= %d", numRects)
+	//logger.Logger.Printf("MsgFramebufferUpdate.Read: numrects= %d", numRects)
 
 	rects := make([]common.Rectangle, numRects)
 	for i := uint16(0); i < numRects; i++ {
-		logger.Logger.Printf("MsgFramebufferUpdate.Read: ###############rect################: %d", i)
+		//logger.Logger.Printf("MsgFramebufferUpdate.Read: ###############rect################: %d", i)
 
 		var encodingTypeInt int32
 		r.SendRectSeparator(-1)
@@ -86,11 +86,11 @@ func (fbm *MsgFramebufferUpdate) Read(c common.IClientConn, r *common.RfbReadHel
 				return nil, err
 			}
 		}
-		jBytes, _ := json.Marshal(data)
+		_/*jBytes*/, _ =/*:=*/ json.Marshal(data)
 
 		encType := common.EncodingType(encodingTypeInt)
 
-		logger.Logger.Printf("MsgFramebufferUpdate.Read: rect# %d, rect hdr data: enctype=%s, data: %s", i, encType, string(jBytes))
+		//logger.Logger.Printf("MsgFramebufferUpdate.Read: rect# %d, rect hdr data: enctype=%s, data: %s", i, encType, string(jBytes))
 		enc, supported := encMap[encodingTypeInt]
 		if supported {
 			var err error
