@@ -8,8 +8,8 @@ import (
 	"net"
 	"unicode"
 
-	"github.com/amitbet/vncproxy/logger"
 	"hcc/violin-novnc/common"
+	"hcc/violin-novnc/lib/logger"
 )
 
 // A ServerMessage implements a message sent from the server to the client.
@@ -87,7 +87,7 @@ func NewClientConn(c net.Conn, cfg *ClientConfig) (*ClientConn, error) {
 func (conn *ClientConn) Connect() error {
 
 	if err := conn.handshake(); err != nil {
-		logger.Errorf("ClientConn.Connect error: %v", err)
+		logger.Logger.Printf("ClientConn.Connect error: %v", err)
 		conn.Close()
 		return err
 	}
@@ -488,7 +488,7 @@ func (c *ClientConn) mainLoop() {
 	}
 
 	defer func() {
-		logger.Warn("ClientConn.MainLoop: exiting!")
+		logger.Logger.Println("ClientConn.MainLoop: exiting!")
 		c.Listeners.Consume(&common.RfbSegment{
 			SegmentType: common.SegmentConnectionClosed,
 		})
@@ -497,26 +497,26 @@ func (c *ClientConn) mainLoop() {
 	for {
 		var messageType uint8
 		if err := binary.Read(c.conn, binary.BigEndian, &messageType); err != nil {
-			logger.Errorf("ClientConn.MainLoop: error reading messagetype, %s", err)
+			logger.Logger.Printf("ClientConn.MainLoop: error reading messagetype, %s", err)
 			break
 		}
 
 		msg, ok := typeMap[messageType]
 		if !ok {
-			logger.Errorf("ClientConn.MainLoop: bad message type, %d", messageType)
+			logger.Logger.Printf("ClientConn.MainLoop: bad message type, %d", messageType)
 			// Unsupported message type! Bad!
 			break
 		}
-		logger.Debugf("ClientConn.MainLoop: got ServerMessage:%s", common.ServerMessageType(messageType))
+		logger.Logger.Printf("ClientConn.MainLoop: got ServerMessage:%s", common.ServerMessageType(messageType))
 		reader.SendMessageStart(common.ServerMessageType(messageType))
 		reader.PublishBytes([]byte{byte(messageType)})
 
 		parsedMsg, err := msg.Read(c, reader)
 		if err != nil {
-			logger.Errorf("ClientConn.MainLoop: error parsing message, %s", err)
+			logger.Logger.Printf("ClientConn.MainLoop: error parsing message, %s", err)
 			break
 		}
-		logger.Debugf("ClientConn.MainLoop: read & parsed ServerMessage:%d, %s", parsedMsg.Type(), parsedMsg)
+		logger.Logger.Printf("ClientConn.MainLoop: read & parsed ServerMessage:%d, %s", parsedMsg.Type(), parsedMsg)
 	}
 }
 

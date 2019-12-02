@@ -2,10 +2,10 @@ package proxy
 
 import (
 	"fmt"
-	"github.com/amitbet/vncproxy/logger"
 	"hcc/violin-novnc/client"
 	"hcc/violin-novnc/common"
 	"hcc/violin-novnc/encodings"
+	"hcc/violin-novnc/lib/logger"
 	"hcc/violin-novnc/player"
 	listeners "hcc/violin-novnc/recorder"
 	"hcc/violin-novnc/server"
@@ -36,7 +36,7 @@ func (vp *VncProxy) createClientConnection(target string, vncPass string) (*clie
 	}
 
 	if err != nil {
-		logger.Errorf("error connecting to vnc server: %s", err)
+		logger.Logger.Printf("error connecting to vnc server: %s", err)
 		return nil, err
 	}
 
@@ -50,7 +50,7 @@ func (vp *VncProxy) createClientConnection(target string, vncPass string) (*clie
 		})
 
 	if err != nil {
-		logger.Errorf("error creating client: %s", err)
+		logger.Logger.Printf("error creating client: %s", err)
 		return nil, err
 	}
 
@@ -62,7 +62,7 @@ func (vp *VncProxy) getProxySession(sessionId string) (*VncSession, error) {
 
 	if !vp.UsingSessions {
 		if vp.SingleSession == nil {
-			logger.Errorf("SingleSession is empty, use sessions or populate the SingleSession member of the VncProxy struct.")
+			logger.Logger.Printf("SingleSession is empty, use sessions or populate the SingleSession member of the VncProxy struct.")
 		}
 		return vp.SingleSession, nil
 	}
@@ -73,7 +73,7 @@ func (vp *VncProxy) newServerConnHandler(cfg *server.ServerConfig, sconn *server
 	var err error
 	session, err := vp.getProxySession(sconn.SessionId)
 	if err != nil {
-		logger.Errorf("Proxy.newServerConnHandler can't get session: %d", sconn.SessionId)
+		logger.Logger.Printf("Proxy.newServerConnHandler can't get session: %s", sconn.SessionId)
 		return err
 	}
 
@@ -84,7 +84,7 @@ func (vp *VncProxy) newServerConnHandler(cfg *server.ServerConfig, sconn *server
 		recPath := path.Join(vp.RecordingDir, recFile)
 		rec, err = listeners.NewRecorder(recPath)
 		if err != nil {
-			logger.Errorf("Proxy.newServerConnHandler can't open recorder save path: %s", recPath)
+			logger.Logger.Printf("Proxy.newServerConnHandler can't open recorder save path: %s", recPath)
 			return err
 		}
 
@@ -101,7 +101,7 @@ func (vp *VncProxy) newServerConnHandler(cfg *server.ServerConfig, sconn *server
 		cconn, err := vp.createClientConnection(target, session.TargetPassword)
 		if err != nil {
 			session.Status = SessionStatusError
-			logger.Errorf("Proxy.newServerConnHandler error creating connection: %s", err)
+			logger.Logger.Printf("Proxy.newServerConnHandler error creating connection: %s", err)
 			return err
 		}
 		if session.Type == SessionTypeRecordingProxy {
@@ -123,7 +123,7 @@ func (vp *VncProxy) newServerConnHandler(cfg *server.ServerConfig, sconn *server
 		err = cconn.Connect()
 		if err != nil {
 			session.Status = SessionStatusError
-			logger.Errorf("Proxy.newServerConnHandler error connecting to client: %s", err)
+			logger.Logger.Printf("Proxy.newServerConnHandler error connecting to client: %s", err)
 			return err
 		}
 
@@ -144,7 +144,7 @@ func (vp *VncProxy) newServerConnHandler(cfg *server.ServerConfig, sconn *server
 
 		if err != nil {
 			session.Status = SessionStatusError
-			logger.Errorf("Proxy.newServerConnHandler error connecting to client: %s", err)
+			logger.Logger.Printf("Proxy.newServerConnHandler error connecting to client: %s", err)
 			return err
 		}
 	}
@@ -153,7 +153,7 @@ func (vp *VncProxy) newServerConnHandler(cfg *server.ServerConfig, sconn *server
 		fbs, err := player.ConnectFbsFile(session.ReplayFilePath, sconn)
 
 		if err != nil {
-			logger.Error("TestServer.NewConnHandler: Error in loading FBS: ", err)
+			logger.Logger.Println("TestServer.NewConnHandler: Error in loading FBS: ", err)
 			return err
 		}
 		sconn.Listeners.AddListener(player.NewFBSPlayListener(sconn, fbs))
@@ -186,18 +186,18 @@ func (vp *VncProxy) StartListening() error {
 	cfg := qwe
 
 	if vp.TCPListeningURL != "" && vp.WsListeningURL != "" {
-		logger.Infof("running two listeners: tcp port: %s, ws url: %s", vp.TCPListeningURL, vp.WsListeningURL)
+		logger.Logger.Printf("running two listeners: tcp port: %s, ws url: %s", vp.TCPListeningURL, vp.WsListeningURL)
 
 		go server.WsServe(vp.WsListeningURL, cfg)
 		server.TcpServe(vp.TCPListeningURL, cfg)
 	}
 	fmt.Println("####", vp.WsListeningURL)
 	if vp.WsListeningURL != "" {
-		logger.Infof("running ws listener url: %s", vp.WsListeningURL)
+		logger.Logger.Printf("running ws listener url: %s", vp.WsListeningURL)
 		server.WsServe(vp.WsListeningURL, cfg)
 	}
 	if vp.TCPListeningURL != "" {
-		logger.Infof("running tcp listener on port: %s", vp.TCPListeningURL)
+		logger.Logger.Printf("running tcp listener on port: %s", vp.TCPListeningURL)
 		server.TcpServe(vp.TCPListeningURL, cfg)
 	}
 

@@ -9,7 +9,7 @@ func MainInit() error {
 		return err
 	}
 
-	err = loggerInit()
+	err = LoggerInit()
 	if err != nil {
 		return err
 	}

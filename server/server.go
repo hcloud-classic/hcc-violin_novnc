@@ -1,12 +1,10 @@
 package server
 
 import (
-	"fmt"
+	"hcc/violin-novnc/common"
 	"hcc/violin-novnc/lib/logger"
 	"io"
 	"net"
-
-	"hcc/violin-novnc/common"
 )
 
 var DefaultClientMessages = []common.ClientMessage{
@@ -81,7 +79,7 @@ func attachNewServerConn(c io.ReadWriter, cfg *ServerConfig, sessionId string) e
 	}
 
 	if err := ServerVersionHandler(cfg, conn); err != nil {
-		fmt.Errorf("err: %v\n", err)
+		logger.Logger.Printf("err: %v\n", err)
 		conn.Close()
 		return err
 	}

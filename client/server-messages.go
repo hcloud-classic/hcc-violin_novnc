@@ -4,9 +4,9 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
-	"github.com/amitbet/vncproxy/logger"
 	"hcc/violin-novnc/common"
 	"hcc/violin-novnc/encodings"
+	"hcc/violin-novnc/lib/logger"
 	"io"
 	"strings"
 )
@@ -63,11 +63,11 @@ func (fbm *MsgFramebufferUpdate) Read(c common.IClientConn, r *common.RfbReadHel
 	// We must always support the raw encoding
 	rawEnc := new(encodings.RawEncoding)
 	encMap[rawEnc.Type()] = rawEnc
-	logger.Debugf("MsgFramebufferUpdate.Read: numrects= %d", numRects)
+	logger.Logger.Printf("MsgFramebufferUpdate.Read: numrects= %d", numRects)
 
 	rects := make([]common.Rectangle, numRects)
 	for i := uint16(0); i < numRects; i++ {
-		logger.Debugf("MsgFramebufferUpdate.Read: ###############rect################: %d", i)
+		logger.Logger.Printf("MsgFramebufferUpdate.Read: ###############rect################: %d", i)
 
 		var encodingTypeInt int32
 		r.SendRectSeparator(-1)
@@ -82,7 +82,7 @@ func (fbm *MsgFramebufferUpdate) Read(c common.IClientConn, r *common.RfbReadHel
 
 		for _, val := range data {
 			if err := binary.Read(r, binary.BigEndian, val); err != nil {
-				logger.Errorf("err: %v", err)
+				logger.Logger.Printf("err: %v", err)
 				return nil, err
 			}
 		}
@@ -90,7 +90,7 @@ func (fbm *MsgFramebufferUpdate) Read(c common.IClientConn, r *common.RfbReadHel
 
 		encType := common.EncodingType(encodingTypeInt)
 
-		logger.Debugf("MsgFramebufferUpdate.Read: rect# %d, rect hdr data: enctype=%s, data: %s", i, encType, string(jBytes))
+		logger.Logger.Printf("MsgFramebufferUpdate.Read: rect# %d, rect hdr data: enctype=%s, data: %s", i, encType, string(jBytes))
 		enc, supported := encMap[encodingTypeInt]
 		if supported {
 			var err error
@@ -107,7 +107,7 @@ func (fbm *MsgFramebufferUpdate) Read(c common.IClientConn, r *common.RfbReadHel
 					break
 				}
 			} else {
-				logger.Errorf("MsgFramebufferUpdate.Read: unsupported encoding type: %d, %s", encodingTypeInt, encType)
+				logger.Logger.Printf("MsgFramebufferUpdate.Read: unsupported encoding type: %d, %s", encodingTypeInt, encType)
 				return nil, fmt.Errorf("MsgFramebufferUpdate.Read: unsupported encoding type: %d, %s", encodingTypeInt, encType)
 			}
 		}

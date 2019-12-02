@@ -1,8 +1,8 @@
 package encodings
 
 import (
-	"github.com/amitbet/vncproxy/logger"
 	"hcc/violin-novnc/common"
+	"hcc/violin-novnc/lib/logger"
 	"io"
 )
 
@@ -49,7 +49,7 @@ func (z *HextileEncoding) Read(pixelFmt *common.PixelFormat, rect *common.Rectan
 			subencoding, err := r.ReadUint8()
 
 			if err != nil {
-				logger.Errorf("HextileEncoding.Read: error in hextile reader: %v", err)
+				logger.Logger.Printf("HextileEncoding.Read: error in hextile reader: %v", err)
 				return nil, err
 			}
 
@@ -64,7 +64,7 @@ func (z *HextileEncoding) Read(pixelFmt *common.PixelFormat, rect *common.Rectan
 				r.ReadBytes(int(bytesPerPixel))
 			}
 			if (subencoding & HextileAnySubrects) == 0 {
-				//logger.Debug("hextile reader: no Subrects")
+				//logger.Logger.Println("hextile reader: no Subrects")
 				continue
 			}
 

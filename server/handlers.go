@@ -4,8 +4,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"hcc/violin-novnc/common"
-
-	"github.com/amitbet/vncproxy/logger"
+	"hcc/violin-novnc/lib/logger"
 	"io"
 )
 
@@ -135,7 +134,7 @@ func ServerServerInitHandler(cfg *ServerConfig, c *ServerConn) error {
 		NameLength:  uint32(len(cfg.DesktopName)),
 		NameText:    []byte(cfg.DesktopName),
 	}
-	logger.Debugf("Server.ServerServerInitHandler initMessage: %v", srvInit)
+	logger.Logger.Printf("Server.ServerServerInitHandler initMessage: %v", srvInit)
 	if err := binary.Write(c, binary.BigEndian, srvInit.FBWidth); err != nil {
 		return err
 	}

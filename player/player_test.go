@@ -4,9 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/amitbet/vncproxy/logger"
 	"hcc/violin-novnc/common"
 	"hcc/violin-novnc/encodings"
+	"hcc/violin-novnc/lib/logger"
 	"hcc/violin-novnc/server"
 )
 
@@ -46,7 +46,7 @@ func TestServer(t *testing.T) {
 		fbs, err := ConnectFbsFile("/Users/amitbet/vncRec/recording.rbs", conn)
 
 		if err != nil {
-			logger.Error("TestServer.NewConnHandler: Error in loading FBS: ", err)
+			logger.Logger.Println("TestServer.NewConnHandler: Error in loading FBS: ", err)
 			return err
 		}
 		conn.Listeners.AddListener(NewFBSPlayListener(conn, fbs))

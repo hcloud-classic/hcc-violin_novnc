@@ -1,12 +1,10 @@
 package server
 
 import (
-	logger2 "hcc/violin-novnc/lib/logger"
+	"hcc/violin-novnc/lib/logger"
 	"io"
 	"net/http"
 	"net/url"
-
-	"github.com/amitbet/vncproxy/logger"
 
 	"golang.org/x/net/websocket"
 )
@@ -24,7 +22,7 @@ func (wsServer *WsServer) Listen(urlStr string, handlerFunc WsHandler) {
 	}
 	url, err := url.Parse(urlStr)
 	if err != nil {
-		logger.Errorf("error while parsing url: ", err)
+		logger.Logger.Println("error while parsing url: ", err)
 	}
 
 	http.Handle(url.Path, websocket.Handler(
@@ -42,6 +40,6 @@ func (wsServer *WsServer) Listen(urlStr string, handlerFunc WsHandler) {
 	// err = http.ListenAndServe(url.Host, nil)
 	err = http.ListenAndServe(url.Host, nil)
 	if err != nil {
-		logger2.Logger.Println("ListenAndServe: " + err.Error())
+		logger.Logger.Println("ListenAndServe: " + err.Error())
 	}
 }

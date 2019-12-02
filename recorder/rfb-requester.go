@@ -1,9 +1,9 @@
 package recorder
 
 import (
-	"github.com/amitbet/vncproxy/logger"
 	"hcc/violin-novnc/client"
 	"hcc/violin-novnc/common"
+	"hcc/violin-novnc/lib/logger"
 	"time"
 )
 
@@ -17,7 +17,7 @@ type RfbRequester struct {
 
 func (p *RfbRequester) Consume(seg *common.RfbSegment) error {
 
-	logger.Debugf("WriteTo.Consume ("+p.Name+"): got segment type=%s", seg.SegmentType)
+	logger.Logger.Printf("WriteTo.Consume ("+p.Name+"): got segment type=%s", seg.SegmentType)
 	switch seg.SegmentType {
 	case common.SegmentServerInitMessage:
 		serverInitMessage := seg.Message.(*common.ServerInit)

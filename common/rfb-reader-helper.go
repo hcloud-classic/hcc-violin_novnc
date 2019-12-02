@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"errors"
-	"github.com/amitbet/vncproxy/logger"
+	"hcc/violin-novnc/lib/logger"
 	"io"
 )
 
@@ -112,18 +112,18 @@ func (r *RfbReadHelper) Read(p []byte) (n int, err error) {
 	if r.savedBytes != nil {
 		_, err := r.savedBytes.Write(p)
 		if err != nil {
-			logger.Warn("RfbReadHelper.Read: failed to collect bytes in mem buffer:", err)
+			logger.Logger.Println("RfbReadHelper.Read: failed to collect bytes in mem buffer:", err)
 		}
 	}
 	/////////
 	// modLen := (prevlen % 10000)
 	// if len(p) == modLen && modLen != prevlen {
-	// 	logger.Warn("RFBReadHelper debug!! plen=", prevlen, " len=", len(p))
+	// 	logger.Logger.Println("RFBReadHelper debug!! plen=", prevlen, " len=", len(p))
 	// }
 	// prevlen = len(p)
 	/////////
 
-	logger.Debugf("RfbReadHelper.Read: publishing bytes, bytes:%v", p[:readLen])
+	logger.Logger.Printf("RfbReadHelper.Read: publishing bytes, bytes:%v", p[:readLen])
 
 	//write the bytes to the Listener for further processing
 	seg := &RfbSegment{Bytes: p[:readLen], SegmentType: SegmentBytes}
@@ -142,14 +142,14 @@ func (r *RfbReadHelper) ReadBytes(count int) ([]byte, error) {
 
 	//lengthRead, err := r.Read(buff)
 	if lengthRead != count {
-		logger.Errorf("RfbReadHelper.ReadBytes unable to read bytes: lengthRead=%d, countExpected=%d", lengthRead, count)
+		logger.Logger.Printf("RfbReadHelper.ReadBytes unable to read bytes: lengthRead=%d, countExpected=%d", lengthRead, count)
 		return nil, errors.New("RfbReadHelper.ReadBytes unable to read bytes")
 	}
 
 	//err := binary.Read(r, binary.BigEndian, &buff)
 
 	if err != nil {
-		logger.Errorf("RfbReadHelper.ReadBytes error while reading bytes: ", err)
+		logger.Logger.Println("RfbReadHelper.ReadBytes error while reading bytes: ", err)
 		//if err := binary.Read(d.conn, binary.BigEndian, &buff); err != nil {
 		return nil, err
 	}
@@ -209,7 +209,7 @@ func (r *RfbReadHelper) ReadTightData(dataSize int) ([]byte, error) {
 		return r.ReadBytes(int(dataSize))
 	}
 	zlibDataLen, err := r.ReadCompactLen()
-	logger.Debugf("RfbReadHelper.ReadTightData: compactlen=%d", zlibDataLen)
+	logger.Logger.Printf("RfbReadHelper.ReadTightData: compactlen=%d", zlibDataLen)
 	if err != nil {
 		return nil, err
 	}

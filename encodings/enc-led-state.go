@@ -1,8 +1,8 @@
 package encodings
 
 import (
-	"github.com/amitbet/vncproxy/logger"
 	"hcc/violin-novnc/common"
+	"hcc/violin-novnc/lib/logger"
 	"io"
 )
 
@@ -24,7 +24,7 @@ func (pe *EncLedStatePseudo) Read(pf *common.PixelFormat, rect *common.Rectangle
 	u8, err := r.ReadUint8()
 	pe.LedState = u8
 	if err != nil {
-		logger.Error("error while reading led state: ", err)
+		logger.Logger.Println("error while reading led state: ", err)
 		return pe, err
 	}
 	return pe, nil

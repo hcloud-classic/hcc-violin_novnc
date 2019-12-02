@@ -3,9 +3,9 @@ package player
 import (
 	"encoding/binary"
 
-	"github.com/amitbet/vncproxy/logger"
 	"hcc/violin-novnc/client"
 	"hcc/violin-novnc/common"
+	"hcc/violin-novnc/lib/logger"
 	"hcc/violin-novnc/server"
 	"io"
 	"time"
@@ -30,13 +30,13 @@ type FBSPlayListener struct {
 func ConnectFbsFile(filename string, conn *server.ServerConn) (*FbsReader, error) {
 	fbs, err := NewFbsReader(filename)
 	if err != nil {
-		logger.Error("failed to open fbs reader:", err)
+		logger.Logger.Println("failed to open fbs reader:", err)
 		return nil, err
 	}
 	//NewFbsReader("/Users/amitbet/vncRec/recording.rbs")
 	initMsg, err := fbs.ReadStartSession()
 	if err != nil {
-		logger.Error("failed to open read fbs start session:", err)
+		logger.Logger.Println("failed to open read fbs start session:", err)
 		return nil, err
 	}
 	conn.SetPixelFormat(&initMsg.PixelFormat)
@@ -63,7 +63,7 @@ func (handler *FBSPlayListener) Consume(seg *common.RfbSegment) error {
 	switch seg.SegmentType {
 	case common.SegmentFullyParsedClientMessage:
 		clientMsg := seg.Message.(common.ClientMessage)
-		logger.Debugf("ClientUpdater.Consume:(vnc-server-bound) got ClientMessage type=%s", clientMsg.Type())
+		logger.Logger.Printf("ClientUpdater.Consume:(vnc-server-bound) got ClientMessage type=%s", clientMsg.Type())
 		switch clientMsg.Type() {
 
 		case common.FramebufferUpdateRequestMsgType:
@@ -85,14 +85,14 @@ func (h *FBSPlayListener) sendFbsMessage() {
 	//conn := h.Conn
 	err := binary.Read(fbs, binary.BigEndian, &messageType)
 	if err != nil {
-		logger.Error("TestServer.NewConnHandler: Error in reading FBS segment: ", err)
+		logger.Logger.Println("TestServer.NewConnHandler: Error in reading FBS segment: ", err)
 		return
 	}
 	//common.IClientConn{}
 	binary.Write(h.Conn, binary.BigEndian, messageType)
 	msg := h.serverMessageMap[messageType]
 	if msg == nil {
-		logger.Error("TestServer.NewConnHandler: Error unknown message type: ", messageType)
+		logger.Logger.Println("TestServer.NewConnHandler: Error unknown message type: ", messageType)
 		return
 	}
 	timeSinceStart := int(time.Now().UnixNano()/int64(time.Millisecond)) - h.startTime
@@ -103,7 +103,7 @@ func (h *FBSPlayListener) sendFbsMessage() {
 
 	err = msg.CopyTo(fbs, h.Conn, fbs)
 	if err != nil {
-		logger.Error("TestServer.NewConnHandler: Error in reading FBS segment: ", err)
+		logger.Logger.Println("TestServer.NewConnHandler: Error in reading FBS segment: ", err)
 		return
 	}
 }

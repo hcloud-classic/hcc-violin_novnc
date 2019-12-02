@@ -3,9 +3,9 @@ package player
 import (
 	"bytes"
 	"encoding/binary"
-	"github.com/amitbet/vncproxy/logger"
 	"hcc/violin-novnc/common"
 	"hcc/violin-novnc/encodings"
+	"hcc/violin-novnc/lib/logger"
 	"io"
 	"os"
 )
@@ -27,7 +27,7 @@ func (fbs *FbsReader) Read(p []byte) (n int, err error) {
 		seg, err := fbs.ReadSegment()
 
 		if err != nil {
-			logger.Error("FBSReader.Read: error reading FBSsegment: ", err)
+			logger.Logger.Println("FBSReader.Read: error reading FBSsegment: ", err)
 			return 0, err
 		}
 		fbs.buffer.Write(seg.bytes)
@@ -45,7 +45,7 @@ func NewFbsReader(fbsFile string) (*FbsReader, error) {
 
 	reader, err := os.OpenFile(fbsFile, os.O_RDONLY, 0644)
 	if err != nil {
-		logger.Error("NewFbsReader: can't open fbs file: ", fbsFile)
+		logger.Logger.Println("NewFbsReader: can't open fbs file: ", fbsFile)
 		return nil, err
 	}
 	return &FbsReader{reader: reader,
@@ -79,7 +79,7 @@ func (fbs *FbsReader) ReadStartSession() (*common.ServerInit, error) {
 	bytes := make([]byte, 12)
 	_, err := reader.Read(bytes)
 	if err != nil {
-		logger.Error("FbsReader.ReadStartSession: error reading rbs init message - FBS file Version:", err)
+		logger.Logger.Println("FbsReader.ReadStartSession: error reading rbs init message - FBS file Version:", err)
 		return nil, err
 	}
 
@@ -88,27 +88,27 @@ func (fbs *FbsReader) ReadStartSession() (*common.ServerInit, error) {
 	bytes = make([]byte, 12)
 	_, err = fbs.Read(bytes)
 	if err != nil {
-		logger.Error("FbsReader.ReadStartSession: error reading rbs init - RFB Version: ", err)
+		logger.Logger.Println("FbsReader.ReadStartSession: error reading rbs init - RFB Version: ", err)
 		return nil, err
 	}
 
 	//push sec type and fb dimensions
 	binary.Read(fbs, binary.BigEndian, &SecTypeNone)
 	if err != nil {
-		logger.Error("FbsReader.ReadStartSession: error reading rbs init - SecType: ", err)
+		logger.Logger.Println("FbsReader.ReadStartSession: error reading rbs init - SecType: ", err)
 	}
 
 	//read frame buffer width, height
 	binary.Read(fbs, binary.BigEndian, &framebufferWidth)
 	if err != nil {
-		logger.Error("FbsReader.ReadStartSession: error reading rbs init - FBWidth: ", err)
+		logger.Logger.Println("FbsReader.ReadStartSession: error reading rbs init - FBWidth: ", err)
 		return nil, err
 	}
 	initMsg.FBWidth = framebufferWidth
 
 	binary.Read(fbs, binary.BigEndian, &framebufferHeight)
 	if err != nil {
-		logger.Error("FbsReader.ReadStartSession: error reading rbs init - FBHeight: ", err)
+		logger.Logger.Println("FbsReader.ReadStartSession: error reading rbs init - FBHeight: ", err)
 		return nil, err
 	}
 	initMsg.FBHeight = framebufferHeight
@@ -117,7 +117,7 @@ func (fbs *FbsReader) ReadStartSession() (*common.ServerInit, error) {
 	pixelFormat := &common.PixelFormat{}
 	binary.Read(fbs, binary.BigEndian, pixelFormat)
 	if err != nil {
-		logger.Error("FbsReader.ReadStartSession: error reading rbs init - Pixelformat: ", err)
+		logger.Logger.Println("FbsReader.ReadStartSession: error reading rbs init - Pixelformat: ", err)
 		return nil, err
 	}
 	initMsg.PixelFormat = *pixelFormat
@@ -130,7 +130,7 @@ func (fbs *FbsReader) ReadStartSession() (*common.ServerInit, error) {
 	var desknameLen uint32
 	binary.Read(fbs, binary.BigEndian, &desknameLen)
 	if err != nil {
-		logger.Error("FbsReader.ReadStartSession: error reading rbs init - deskname Len: ", err)
+		logger.Logger.Println("FbsReader.ReadStartSession: error reading rbs init - deskname Len: ", err)
 		return nil, err
 	}
 	initMsg.NameLength = desknameLen
@@ -138,7 +138,7 @@ func (fbs *FbsReader) ReadStartSession() (*common.ServerInit, error) {
 	bytes = make([]byte, desknameLen)
 	fbs.Read(bytes)
 	if err != nil {
-		logger.Error("FbsReader.ReadStartSession: error reading rbs init - desktopName: ", err)
+		logger.Logger.Println("FbsReader.ReadStartSession: error reading rbs init - desktopName: ", err)
 		return nil, err
 	}
 
@@ -154,7 +154,7 @@ func (fbs *FbsReader) ReadSegment() (*FbsSegment, error) {
 	//read length
 	err := binary.Read(reader, binary.BigEndian, &bytesLen)
 	if err != nil {
-		logger.Error("FbsReader.ReadStartSession: read len, error reading rbs file: ", err)
+		logger.Logger.Println("FbsReader.ReadStartSession: read len, error reading rbs file: ", err)
 		return nil, err
 	}
 
@@ -164,7 +164,7 @@ func (fbs *FbsReader) ReadSegment() (*FbsSegment, error) {
 	bytes := make([]byte, paddedSize)
 	_, err = reader.Read(bytes)
 	if err != nil {
-		logger.Error("FbsReader.ReadSegment: read bytes, error reading rbs file: ", err)
+		logger.Logger.Println("FbsReader.ReadSegment: read bytes, error reading rbs file: ", err)
 		return nil, err
 	}
 
@@ -175,7 +175,7 @@ func (fbs *FbsReader) ReadSegment() (*FbsSegment, error) {
 	var timeSinceStart uint32
 	binary.Read(reader, binary.BigEndian, &timeSinceStart)
 	if err != nil {
-		logger.Error("FbsReader.ReadSegment: read timestamp, error reading rbs file: ", err)
+		logger.Logger.Println("FbsReader.ReadSegment: read timestamp, error reading rbs file: ", err)
 		return nil, err
 	}
 

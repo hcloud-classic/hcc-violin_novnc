@@ -3,11 +3,10 @@ package server
 import (
 	"encoding/binary"
 	"fmt"
+	"hcc/violin-novnc/common"
+	"hcc/violin-novnc/lib/logger"
 	"io"
 	"sync"
-
-	"github.com/amitbet/vncproxy/logger"
-	"hcc/violin-novnc/common"
 )
 
 type ServerConn struct {
@@ -169,22 +168,22 @@ func (c *ServerConn) handle() error {
 		default:
 			var messageType common.ClientMessageType
 			if err := binary.Read(c, binary.BigEndian, &messageType); err != nil {
-				logger.Errorf("ServerConn.handle error: %v", err)
+				logger.Logger.Printf("ServerConn.handle error: %v", err)
 				return err
 			}
-			logger.Debugf("ServerConn.handle: got messagetype, %d", messageType)
+			logger.Logger.Printf("ServerConn.handle: got messagetype, %d", messageType)
 			msg, ok := clientMessages[messageType]
-			logger.Debugf("ServerConn.handle: found message type, %v", ok)
+			logger.Logger.Printf("ServerConn.handle: found message type, %v", ok)
 			if !ok {
-				logger.Errorf("ServerConn.handle: unsupported message-type: %v", messageType)
+				logger.Logger.Printf("ServerConn.handle: unsupported message-type: %v", messageType)
 			}
 			parsedMsg, err := msg.Read(c)
-			logger.Debugf("ServerConn.handle: got parsed messagetype, %v", parsedMsg)
+			logger.Logger.Printf("ServerConn.handle: got parsed messagetype, %v", parsedMsg)
 			//update connection for pixel format / color map changes
 			switch parsedMsg.Type() {
 			case common.SetPixelFormatMsgType:
 				// update pixel format
-				logger.Debugf("ClientUpdater.Consume: updating pixel format")
+				logger.Logger.Println("ClientUpdater.Consume: updating pixel format")
 				pixFmtMsg := parsedMsg.(*MsgSetPixelFormat)
 				c.SetPixelFormat(&pixFmtMsg.PF)
 				if pixFmtMsg.PF.TrueColor != 0 {
@@ -194,11 +193,11 @@ func (c *ServerConn) handle() error {
 			////////
 
 			if err != nil {
-				logger.Errorf("srv err %s", err.Error())
+				logger.Logger.Printf("srv err %s", err.Error())
 				return err
 			}
 
-			logger.Debugf("IServerConn.Handle got ClientMessage: %s, %v", parsedMsg.Type(), parsedMsg)
+			logger.Logger.Printf("IServerConn.Handle got ClientMessage: %s, %v", parsedMsg.Type(), parsedMsg)
 			//TODO: treat set encodings by allowing only supported encoding in proxy configurations
 			//// if parsedMsg.Type() == common.SetEncodingsMsgType{
 			//// 	c.cfg.Encodings
@@ -210,7 +209,7 @@ func (c *ServerConn) handle() error {
 			}
 			err = c.Listeners.Consume(seg)
 			if err != nil {
-				logger.Errorf("IServerConn.Handle: listener consume err %s", err.Error())
+				logger.Logger.Printf("IServerConn.Handle: listener consume err %s", err.Error())
 				return err
 			}
 		}

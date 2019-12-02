@@ -5,7 +5,8 @@ import (
 	"hcc/violin-novnc/lib/logger"
 )
 
-func loggerInit() error {
+// LoggerInit : Init logger
+func LoggerInit() error {
 	if !logger.Prepare() {
 		return errors.New("error occurred while preparing logger")
 	}
