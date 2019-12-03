@@ -1,10 +1,11 @@
 package graphql
 
 import (
-	"github.com/graphql-go/graphql"
 	graphqlType "hcc/violin-novnc/action/graphql/type"
 	"hcc/violin-novnc/driver"
 	"hcc/violin-novnc/lib/logger"
+
+	"github.com/graphql-go/graphql"
 )
 
 var mutationTypes = graphql.NewObject(graphql.ObjectConfig{
