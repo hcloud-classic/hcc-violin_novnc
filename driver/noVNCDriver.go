@@ -4,13 +4,17 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/graphql-go/graphql"
 	"hcc/violin-novnc/dao"
 	"hcc/violin-novnc/lib/logger"
 	"hcc/violin-novnc/model"
 	vncproxy "hcc/violin-novnc/proxy"
+	"math/rand"
+	"net"
 	"os"
+	"strconv"
 	"sync"
+
+	"github.com/graphql-go/graphql"
 )
 
 //**node scheduling argument */
@@ -119,17 +123,31 @@ func Runner(params graphql.ResolveParams) (interface{}, error) {
 	vnc := model.Vnc{
 		ActionClassify: params.Args["action"].(string),
 	}
-
 	var err error
 	if params.Args["action"].(string) != "" {
 		mutex.Lock()
+		var genWsPort int
+		// allocWsPort, errs := dao.FindAvailableWsPort()
+		//
+		for {
+			genWsPort = GenerateRandPort(40000, 50000)
+			if SelfCheckPortScan(genWsPort) == "Closed" {
+				break
+			}
+		}
 
-		allocWsPort, errs := dao.FindAvailableWsPort()
-		if errs != nil {
+		allocWsPort, errs := dao.CheckoutSpecificWSPort(strconv.Itoa(genWsPort))
+		// allocWsPort, errs := dao.CheckoutSpecificWSPort("59245")
+		// fmt.Println("allocWsPort : ", allocWsPort)
+		// fmt.Println("errs : ", errs)
+		if errs == nil {
 			vnc.Info = "Web Socket Not found"
 			return vnc, nil
 		} else {
-			vnc.WebSocket = allocWsPort.(string)
+			if allocWsPort == nil {
+				vnc.WebSocket = strconv.Itoa(genWsPort)
+
+			}
 		}
 		params.Args["websocket_port"] = vnc.WebSocket
 
@@ -161,4 +179,20 @@ func Runner(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	return vnc, nil
+}
+
+func GenerateRandPort(min int, max int) int {
+	return rand.Intn(max-min) + min
+}
+
+func SelfCheckPortScan(Port int) string {
+	port := strconv.FormatInt(int64(Port), 10)
+	conn, err := net.Dial("tcp", "127.0.0.1:"+port)
+	fmt.Println(conn)
+	if err == nil {
+		fmt.Println("Port", Port, "open")
+		conn.Close()
+		return "Open"
+	}
+	return "Closed"
 }

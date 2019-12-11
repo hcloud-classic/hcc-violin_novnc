@@ -8,6 +8,23 @@ import (
 	"time"
 )
 
+func CheckoutSpecificWSPort(WSPort string) (interface{}, error) {
+	var IsPortAvailable string
+
+	sql := "select if (isnull(server_uuid),'None','Using') from server_vnc where ws_port=?"
+	// sql := "select * from server_vnc where ws_port = ?"
+
+	err := mysql.Db.QueryRow(sql, WSPort).Scan(
+		&IsPortAvailable)
+
+	if err != nil {
+		logger.Logger.Println(err)
+		return nil, err
+	}
+
+	return IsPortAvailable, nil
+}
+
 func FindAvailableWsPort() (interface{}, error) {
 	var serverUUID string
 	var TargetIP string
