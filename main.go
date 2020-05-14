@@ -23,7 +23,6 @@ func main() {
 		vncEnd.MainEnd()
 	}()
 
-	// driver.RunProcxy("/var/log/violin-novnc/recordings/a/", "172.18.0.1:5901", "qwe1212", "5905")
 	fmt.Println(config.HTTP.Port)
 
 	http.Handle("/graphql", graphql.GraphqlHandler)
