@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"fmt"
 	"hcc/violin-novnc/lib/logger"
 	"hcc/violin-novnc/lib/mysql"
 	"hcc/violin-novnc/model"
@@ -11,17 +12,16 @@ import (
 func CheckoutSpecificWSPort(WSPort string) (interface{}, error) {
 	var IsPortAvailable string
 
-	sql := "select if (isnull(server_uuid),'None','Using') from server_vnc where ws_port=?"
+	sql := "select if (count(server_uuid),'Using','None') from violin_novnc.server_vnc where ws_port=?"
 	// sql := "select * from server_vnc where ws_port = ?"
 
 	err := mysql.Db.QueryRow(sql, WSPort).Scan(
 		&IsPortAvailable)
-
 	if err != nil {
 		logger.Logger.Println(err)
 		return nil, err
 	}
-
+	fmt.Println(len(IsPortAvailable))
 	return IsPortAvailable, nil
 }
 
@@ -34,11 +34,12 @@ func FindAvailableWsPort() (interface{}, error) {
 	var createdAt time.Time
 	var AvailablePort string
 
-	sql := "select * from server_vnc where ws_port=(select max(ws_port) from server_vnc) "
+	sql := "select * from violin_novnc.server_vnc where ws_port=(select max(ws_port) from violin_novnc.server_vnc) "
 	stmt, err := mysql.Db.Query(sql)
 	// fmt.Println("stmt: ", stmt)
 	if err != nil {
 		logger.Logger.Println(err)
+		fmt.Println(err)
 		return nil, err
 	}
 	defer func() {
@@ -49,11 +50,13 @@ func FindAvailableWsPort() (interface{}, error) {
 		err := stmt.Scan(&serverUUID, &TargetIP, &TargetPort, &WebSocket, &TargetPass, &createdAt)
 		if err != nil {
 			logger.Logger.Println(err)
+			fmt.Println(err)
 			return nil, err
 		}
 		Port, parseerr := strconv.Atoi(WebSocket)
 		if parseerr != nil {
 			logger.Logger.Println(err)
+			fmt.Println(err)
 			return nil, err
 		}
 		AvailablePort = strconv.Itoa(Port + 1)
