@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"hcc/violin-novnc/action/graphql"
+	//"hcc/violin-novnc/driver"
 	vncEnd "hcc/violin-novnc/end"
 	vncInit "hcc/violin-novnc/init"
 	"hcc/violin-novnc/lib/config"
@@ -15,7 +16,7 @@ import (
 func init() {
 	err := vncInit.MainInit()
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 }
 func main() {
