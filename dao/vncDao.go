@@ -9,6 +9,29 @@ import (
 	"time"
 )
 
+func SelectWSPortByParam(token, srvUUID string) ([]string, error) {
+	var selectList []string
+	logger.Logger.Println("dao get param " + token + " " + srvUUID)
+
+	sql := "SELECT `ws_port` FROM `violin_novnc`.`server_vnc` WHERE token=? AND server_uuid=?;"
+	stmt, err := mysql.Db.Query(sql, token, srvUUID)
+	if err != nil {
+		logger.Logger.Println("Dao.SelectWSPortbyParam -- ", err)
+		return nil, err
+	}
+	defer func() {
+		_ = stmt.Close()
+	}()
+
+	var wsStr string
+	for stmt.Next() {
+		stmt.Scan(&wsStr)
+		selectList = append(selectList, wsStr)
+	}
+
+	return selectList, nil
+}
+
 func CheckoutSpecificWSPort(WSPort string) (interface{}, error) {
 	var IsPortAvailable string
 
