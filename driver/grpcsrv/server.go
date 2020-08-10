@@ -19,6 +19,8 @@ type server struct {
 	rpcnovnc.UnimplementedNovncServer
 }
 
+var srv *grpc.Server
+
 /*
 func (s *server) CreateVNC(ctx context.Context, in *rpcnovnc.ReqNoVNC) (*rpcnovnc.ResNoVNC, error) {
 	driver.RunnerGRPC(in.Vncs)
@@ -51,13 +53,14 @@ func InitGRPCServer() error {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+	defer lis.Close()
 	logger.Logger.Println("Opening server on port " + strconv.FormatInt(config.HTTP.Port, 10) + "...")
 
-	s := grpc.NewServer()
-	rpcnovnc.RegisterNovncServer(s, &server{})
-	reflection.Register(s)
+	srv = grpc.NewServer()
+	rpcnovnc.RegisterNovncServer(srv, &server{})
+	reflection.Register(srv)
 
-	err = s.Serve(lis)
+	err = srv.Serve(lis)
 	if err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
@@ -65,6 +68,6 @@ func InitGRPCServer() error {
 	return err
 }
 
-func CleanGRPC() {
-
+func CleanGRPCServer() {
+	srv.Stop()
 }

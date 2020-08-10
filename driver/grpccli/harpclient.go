@@ -2,7 +2,6 @@ package grpccli
 
 import (
 	"context"
-	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -21,7 +20,7 @@ func initHarp() error {
 	logger.Logger.Println("Try connect to harp " + addr)
 	harpconn, err := grpc.Dial(addr, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
-		log.Fatalf("Connect Harp failed: %v", err)
+		logger.Logger.Fatalf("Connect Harp failed: %v", err)
 		return err
 	}
 
@@ -31,7 +30,7 @@ func initHarp() error {
 	return nil
 }
 
-func CleanGRPCHarp() {
+func cleanHarp() {
 	harpconn.Close()
 }
 

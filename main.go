@@ -36,13 +36,13 @@ func init() {
 func end() {
 	mysql.Db.Close()
 	logger.FpLog.Close()
+	grpccli.CleanGRPCClient()
+
 }
 
 func main() {
 	defer end()
-	// driver.RunProcxy("/var/log/violin-novnc/recordings/a/", "172.18.0.1:5901", "qwe1212", "5905")
 
-	//http.Handle("/graphql", graphql.GraphqlHandler)
 	grpccli.InitGRPCClient()
 	grpcsrv.InitGRPCServer()
 }

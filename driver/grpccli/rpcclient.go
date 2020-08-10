@@ -13,3 +13,7 @@ var RC = &RpcClient{}
 func InitGRPCClient() {
 	go initHarp()
 }
+
+func CleanGRPCClient() {
+	cleanHarp()
+}
