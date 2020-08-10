@@ -11,7 +11,7 @@ type RpcClient struct {
 var RC = &RpcClient{}
 
 func InitGRPCClient() {
-	go initHarp()
+	initHarp()
 }
 
 func CleanGRPCClient() {
