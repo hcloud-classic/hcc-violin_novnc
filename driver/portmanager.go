@@ -2,9 +2,6 @@ package driver
 
 import (
 	"strconv"
-
-	"hcc/violin-novnc/dao"
-	"hcc/violin-novnc/lib/logger"
 )
 
 const (
@@ -19,26 +16,9 @@ type PortManager struct {
 	availablePortList []int
 }
 
-func (pm *PortManager) CheckExistWSPort(token, srvUUID string) ([]int, error) {
-	var wspList []int
-	selectList, err := dao.SelectWSPortByParam(token, srvUUID)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, wsStr := range selectList {
-		wsp, _ := strconv.Atoi(wsStr)
-		wspList = append(wspList, wsp)
-	}
-
-	return wspList, nil
-
-}
-
 func (pm *PortManager) GetAvailablePort() string {
 	var port int
 
-	logger.Logger.Println(pm)
 	if len(pm.availablePortList) > 0 {
 		port = pm.availablePortList[0]
 		if len(pm.availablePortList) == 1 {

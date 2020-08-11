@@ -28,23 +28,29 @@ func (s *server) CreateVNC(ctx context.Context, in *rpcnovnc.ReqNoVNC) (*rpcnovn
 }
 */
 
-func (s *server) ControlVNC(ctx context.Context, in *rpcnovnc.ReqNoVNC) (*rpcnovnc.ResNoVNC, error) {
-	for _, vnc := range in.Vncs {
-		switch vnc.Action {
-		case "CREATE":
-			driver.VNCM.Create(vnc.Token, vnc.ServerUUID)
-		case "DELETE":
+func (s *server) ControlVNC(ctx context.Context, in *rpcnovnc.ReqControlVNC) (*rpcnovnc.ResControlVNC, error) {
+	var port string
+	var err error
+	vnc := in.Vnc
 
-		case "UPDATE":
-			continue
-		case "INFO":
-			continue
-		default:
-			logger.Logger.Println("Undefined Action: " + vnc.Action)
+	switch vnc.Action {
+	case "CREATE":
+		port, err = driver.VNCM.Create(vnc.Token, vnc.ServerUUID)
+		if err != nil {
+			return nil, err
 		}
-
+	case "DELETE":
+		err = driver.VNCM.Delete(vnc.Token, vnc.ServerUUID)
+		if err != nil {
+			return nil, err
+		}
+	case "UPDATE":
+	case "INFO":
+	default:
+		logger.Logger.Println("Undefined Action: " + vnc.Action)
 	}
-	return &rpcnovnc.ResNoVNC{Vncs: in.Vncs}, nil
+
+	return &rpcnovnc.ResControlVNC{Port: port}, nil
 }
 
 func InitGRPCServer() error {

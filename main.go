@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"hcc/violin-novnc/driver"
 	"hcc/violin-novnc/driver/grpccli"
 	"hcc/violin-novnc/driver/grpcsrv"
 	"hcc/violin-novnc/lib/config"
@@ -41,5 +42,6 @@ func main() {
 	defer end()
 
 	grpccli.InitGRPCClient()
+	driver.VNCM.Prepare() // need harp to create proxy
 	grpcsrv.InitGRPCServer()
 }
