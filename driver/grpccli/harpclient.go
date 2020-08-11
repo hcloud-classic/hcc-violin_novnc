@@ -4,6 +4,7 @@ import (
 	"context"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"google.golang.org/grpc"
@@ -15,7 +16,7 @@ import (
 
 var harpconn *grpc.ClientConn
 
-func initHarp() error {
+func initHarp(wg *sync.WaitGroup) error {
 	var err error
 	addr := config.Harp.Address + ":" + strconv.FormatInt(config.Harp.Port, 10)
 	logger.Logger.Println("Try connect to harp " + addr)
@@ -28,6 +29,7 @@ func initHarp() error {
 	RC.harp = rpcharp.NewHarpClient(harpconn)
 	logger.Logger.Println("GRPC connection to harp created")
 
+	wg.Done()
 	return nil
 }
 

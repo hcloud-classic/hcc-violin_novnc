@@ -2,10 +2,7 @@ package main
 
 import (
 	"log"
-	//"sync"
 
-	//"hcc/violin-novnc/action/graphql"
-	//"hcc/violin-novnc/driver"
 	"hcc/violin-novnc/driver/grpccli"
 	"hcc/violin-novnc/driver/grpcsrv"
 	"hcc/violin-novnc/lib/config"

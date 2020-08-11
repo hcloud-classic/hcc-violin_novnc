@@ -56,16 +56,18 @@ func (vncm *VNCManager) Create(token, srvUUID string) (string, error) {
 	wsURL := "http://0.0.0.0:" + port + "/" + srvUUID + "_" + port
 
 	proxy := &vncproxy.VncProxy{
-		WsListeningURL: wsURL, // empty = not listening on ws
-		SingleSession: &vncproxy.VncSession{
-			Target:         srvIP + ":" + port,
-			TargetPort:     vncm.vncPort,
-			TargetPassword: vncm.vncPasswd, //"vncPass",
-			ID:             "dummySession" + port,
-			Status:         vncproxy.SessionStatusInit,
-			Type:           vncproxy.SessionTypeProxyPass,
-		}, // to be used when not using sessions
-		UsingSessions: false, //false = single session - defined in the var above
+		WsListeningURL: wsURL,
+		/*
+			SingleSession: &vncproxy.VncSession{
+				Target:         srvIP,
+				TargetPort:     vncm.vncPort,
+				TargetPassword: vncm.vncPasswd, //"vncPass",
+				ID:             "dummySession_" + port,
+				Status:         vncproxy.SessionStatusInit,
+				Type:           vncproxy.SessionTypeProxyPass,
+			}, // to be used when not using sessions
+		*/
+		UsingSessions: true, //false = single session - defined in the var above
 	}
 
 	go proxy.StartListening()

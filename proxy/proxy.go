@@ -1,7 +1,6 @@
 package proxy
 
 import (
-	"fmt"
 	"hcc/violin-novnc/client"
 	"hcc/violin-novnc/common"
 	"hcc/violin-novnc/encodings"
@@ -191,7 +190,6 @@ func (vp *VncProxy) StartListening() error {
 		go server.WsServe(vp.WsListeningURL, cfg)
 		server.TcpServe(vp.TCPListeningURL, cfg)
 	}
-	fmt.Println("####", vp.WsListeningURL)
 	if vp.WsListeningURL != "" {
 		logger.Logger.Printf("running ws listener url: %s", vp.WsListeningURL)
 		server.WsServe(vp.WsListeningURL, cfg)
