@@ -49,9 +49,9 @@ func wsHandlerFunc(ws io.ReadWriter, cfg *ServerConfig, sessionId string) {
 	}
 }
 
-func WsServe(url string, cfg *ServerConfig) error {
-	server := WsServer{cfg}
-	server.Listen(url, WsHandler(wsHandlerFunc))
+func WsServe(url string, cfg *ServerConfig, server **WsServer) error {
+	*server = &WsServer{cfg, nil, nil}
+	(*server).Listen(url, WsHandler(wsHandlerFunc))
 	return nil
 }
 

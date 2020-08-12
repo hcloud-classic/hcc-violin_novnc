@@ -35,6 +35,7 @@ func end() {
 	mysql.Db.Close()
 	logger.FpLog.Close()
 	grpccli.CleanGRPCClient()
+	grpcsrv.CleanGRPCServer()
 
 }
 
@@ -42,6 +43,6 @@ func main() {
 	defer end()
 
 	grpccli.InitGRPCClient()
-	driver.VNCM.Prepare() // need harp to create proxy
+	driver.VNCD.Prepare() // need harp to create proxy
 	grpcsrv.InitGRPCServer()
 }

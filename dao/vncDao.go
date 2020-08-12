@@ -19,7 +19,7 @@ func CreateVNC(args map[string]interface{}) (model.Vnc, error) {
 		TargetPass:     "qwe1212",
 		ActionClassify: "Create",
 	}
-	sql := "INSERT INTO server_vnc(server_uuid, target_ip, target_port, ws_port, target_pass ,created_at) values (?, ?, ?, ?, ?, now()) ON DUPLICATE KEY UPDATE ws_port=?, created_at=now()"
+	sql := "INSERT INTO server_vnc(server_uuid, target_ip, target_port, ws_port, target_pass ,created_at) values (?, ?, ?, ?, ?, now()) ON DUPLICATE KEY UPDATE target_ip=?, target_port=?, ws_port=?, created_at=now()"
 	stmt, err := mysql.Db.Prepare(sql)
 
 	if err != nil {
@@ -30,7 +30,7 @@ func CreateVNC(args map[string]interface{}) (model.Vnc, error) {
 		_ = stmt.Close()
 	}()
 
-	result, err := stmt.Exec(serverVnc.ServerUUID, serverVnc.TargetIP, serverVnc.TargetPort, serverVnc.WebSocket, serverVnc.TargetPass, serverVnc.WebSocket)
+	result, err := stmt.Exec(serverVnc.ServerUUID, serverVnc.TargetIP, serverVnc.TargetPort, serverVnc.WebSocket, serverVnc.TargetPass, serverVnc.TargetIP, serverVnc.TargetPort, serverVnc.WebSocket)
 
 	if err != nil {
 		logger.Logger.Println("DB Insert Error", err)
@@ -42,7 +42,17 @@ func CreateVNC(args map[string]interface{}) (model.Vnc, error) {
 	return serverVnc, nil
 }
 
-func DeleteVNC(args map[string]interface{}) error {
+func DeleteVNC(srvUUID string) error {
+	sql := "DELETE FROM `violin_novnc`.`server_vnc` WHERE server_uuid=\"" + srvUUID + "\""
+
+	stmt, err := mysql.Db.Query(sql)
+	if err != nil {
+		logger.Logger.Println(err.Error())
+		return err
+	}
+	defer func() {
+		_ = stmt.Close()
+	}()
 
 	return nil
 }
@@ -72,8 +82,8 @@ func GetVNCServerList() ([]string, error) {
 	return srvUUIDList, nil
 }
 
-func InitVNCUser() error {
-	sql := "TRUNCATE TABLE `violin_novnc`.`vnc_user`"
+func InitVNCServer() error {
+	sql := "TRUNCATE TABLE `violin_novnc`.`server_vnc`"
 
 	stmt, err := mysql.Db.Query(sql)
 	if err != nil {
@@ -86,28 +96,4 @@ func InitVNCUser() error {
 
 	return nil
 
-}
-
-func AddVNCUser(token, srvUUID string) error {
-	sql := "INSERT IGNORE INTO vnc_user(server_uuid, token) values(?, ?)"
-
-	stmt, err := mysql.Db.Prepare(sql)
-	if err != nil {
-		logger.Logger.Println(err)
-		return err
-	}
-	defer func() {
-		_ = stmt.Close()
-	}()
-
-	_, err = stmt.Exec(srvUUID, token)
-	if err != nil {
-		logger.Logger.Println("DB Insert Error", err)
-		return err
-	}
-	return nil
-}
-
-func DeleteVNCUser(token, srvUUID string) error {
-	return nil
 }

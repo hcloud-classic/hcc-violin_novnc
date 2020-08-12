@@ -35,15 +35,16 @@ func (s *server) ControlVNC(ctx context.Context, in *rpcnovnc.ReqControlVNC) (*r
 
 	switch vnc.Action {
 	case "CREATE":
-		port, err = driver.VNCM.Create(vnc.Token, vnc.ServerUUID)
+		port, err = driver.VNCD.Create(vnc.Token, vnc.ServerUUID)
 		if err != nil {
 			return nil, err
 		}
 	case "DELETE":
-		err = driver.VNCM.Delete(vnc.Token, vnc.ServerUUID)
+		err = driver.VNCD.Delete(vnc.Token, vnc.ServerUUID)
 		if err != nil {
 			return nil, err
 		}
+		port = "Success"
 	case "UPDATE":
 	case "INFO":
 	default:
