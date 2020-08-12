@@ -6,3 +6,4 @@ goreport_grade
 /vendor
 /_venodr-*
 nohup.out
+action/grpc
