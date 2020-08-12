@@ -36,7 +36,7 @@ func (vncd *VNCDriver) Prepare() {
 	}
 }
 
-func (vncd *VNCDriver) Create(token, srvUUID string) (string, error) {
+func (vncd *VNCDriver) Create(srvUUID string) (string, error) {
 	var srvIP, port string
 	var err error
 
@@ -127,7 +127,7 @@ func (vncd *VNCDriver) Create(token, srvUUID string) (string, error) {
 	return wsPort.(string), nil
 }
 
-func (vncd *VNCDriver) Delete(token, srvUUID string) error {
+func (vncd *VNCDriver) Delete(srvUUID string) error {
 
 	vncd.addMutex.Lock()
 	if cn, b := vncd.serverConnectionMap.Load(srvUUID); b {
