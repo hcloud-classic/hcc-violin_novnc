@@ -1,4 +1,4 @@
-package grpcsrv
+package server
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	rpcnovnc "hcc/violin-novnc/action/grpc/rpcviolin_novnc"
+	rpcnovnc "hcc/violin-novnc/action/grpc/pb/rpcviolin_novnc"
 
 	"hcc/violin-novnc/driver"
 	"hcc/violin-novnc/lib/config"

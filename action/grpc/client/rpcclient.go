@@ -1,9 +1,9 @@
-package grpccli
+package client
 
 import (
 	"sync"
 
-	"hcc/violin-novnc/action/grpc/rpcharp"
+	"hcc/violin-novnc/action/grpc/pb/rpcharp"
 )
 
 type RpcClient struct {

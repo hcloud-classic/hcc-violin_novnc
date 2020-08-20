@@ -1,4 +1,5 @@
 violin_novnc
+*.pb.go
 coverage.out
 goreport_grade
 .idea/
@@ -6,4 +7,4 @@ goreport_grade
 /vendor
 /_venodr-*
 nohup.out
-action/grpc
+

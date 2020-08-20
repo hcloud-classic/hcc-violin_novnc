@@ -3,8 +3,8 @@ package driver
 import (
 	"sync"
 
+	"hcc/violin-novnc/action/grpc/client"
 	"hcc/violin-novnc/dao"
-	"hcc/violin-novnc/driver/grpccli"
 	"hcc/violin-novnc/lib/logger"
 	vncproxy "hcc/violin-novnc/proxy"
 )
@@ -47,7 +47,7 @@ func (vncd *VNCDriver) Create(srvUUID string) (string, error) {
 		logger.Logger.Println("[FAIL]")
 		logger.Logger.Print("Asking server ip to harp...")
 
-		srvIP, err = grpccli.RC.GetServerIP(srvUUID)
+		srvIP, err = client.RC.GetServerIP(srvUUID)
 		if err != nil {
 			logger.Logger.Println("[FAIL]\n", err)
 			return "", err

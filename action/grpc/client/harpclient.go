@@ -1,4 +1,4 @@
-package grpccli
+package client
 
 import (
 	"context"
@@ -9,12 +9,12 @@ import (
 
 	"google.golang.org/grpc"
 
-	"hcc/violin-novnc/action/grpc/rpcharp"
+	"hcc/violin-novnc/action/grpc/pb/rpcharp"
 	"hcc/violin-novnc/lib/config"
 	"hcc/violin-novnc/lib/logger"
 )
 
-var harpconn *grpc.ClientConn
+var harpconn *rpcharp.ClientConn
 
 func initHarp(wg *sync.WaitGroup) error {
 	var err error

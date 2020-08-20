@@ -1,4 +1,4 @@
-package grpccli
+package client
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	rpcnovnc "hcc/violin-novnc/action/grpc/rpcviolin_novnc"
+	rpcnovnc "hcc/violin-novnc/action/grpc/pb/rpcviolin_novnc"
 	"hcc/violin-novnc/lib/config"
 	"hcc/violin-novnc/lib/logger"
 )
