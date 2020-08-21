@@ -6,7 +6,7 @@ import (
 	"hcc/violin-novnc/action/grpc/client"
 	"hcc/violin-novnc/dao"
 	"hcc/violin-novnc/lib/logger"
-	vncproxy "hcc/violin-novnc/proxy"
+	vncproxy "hcc/violin-novnc/lib/novnc/proxy"
 )
 
 type VNCDriver struct {

@@ -14,7 +14,7 @@ import (
 	"hcc/violin-novnc/lib/logger"
 )
 
-var harpconn *rpcharp.ClientConn
+var harpconn *grpc.ClientConn
 
 func initHarp(wg *sync.WaitGroup) error {
 	var err error
