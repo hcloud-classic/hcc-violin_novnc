@@ -9,18 +9,19 @@ import (
 
 	rpcnovnc "hcc/violin-novnc/action/grpc/pb/rpcviolin_novnc"
 	"hcc/violin-novnc/lib/config"
+	"hcc/violin-novnc/lib/errors"
 	"hcc/violin-novnc/lib/logger"
 )
 
 var novncconn grpc.ClientConn
 
-func initNovnc() error {
+func initNovnc() *errors.HccError {
 	addr := config.ViolinNoVnc.ServerAddress + ":" + strconv.FormatInt(config.ViolinNoVnc.ServerPort, 10)
 	logger.Logger.Println("Try connect to violin-novnc " + addr)
 	novncconn, err := grpc.Dial(addr, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
-		logger.Logger.Fatalf("Connect Violin-Novnc failed: %v", err)
-		return err
+		// Change Middleware Name
+		return errors.NewHccError(errors.ViolinNoVNCGraphQLInitFail, err.Error())
 	}
 
 	RC.novnc = rpcnovnc.NewNovncClient(novncconn)
@@ -33,7 +34,7 @@ func cleanNovnc() {
 	novncconn.Close()
 }
 
-func (rc *RpcClient) ControlVNC(reqData map[string]interface{}) (interface{}, error) {
+func (rc *RpcClient) ControlVNC(reqData map[string]interface{}) (interface{}, *errors.HccError) {
 	//req data mapping
 	var req rpcnovnc.ReqControlVNC
 	req.Vnc = &rpcnovnc.VNC{
@@ -47,9 +48,7 @@ func (rc *RpcClient) ControlVNC(reqData map[string]interface{}) (interface{}, er
 
 	r, err := rc.novnc.ControlVNC(ctx, &req)
 	if err != nil {
-		return nil, err
+		return nil, errors.NewHccError(errors.ViolinNoVNCGraphQLReceiveError, "ControlVNC : "+err.Error())
 	}
-	logger.Logger.Println(r)
-
 	return r, nil
 }

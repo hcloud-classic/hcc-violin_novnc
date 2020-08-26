@@ -5,6 +5,7 @@ import (
 
 	"hcc/violin-novnc/action/grpc/client"
 	"hcc/violin-novnc/dao"
+	"hcc/violin-novnc/lib/errors"
 	"hcc/violin-novnc/lib/logger"
 	vncproxy "hcc/violin-novnc/lib/novnc/proxy"
 )
@@ -36,9 +37,9 @@ func (vncd *VNCDriver) Prepare() {
 	}
 }
 
-func (vncd *VNCDriver) Create(srvUUID string) (string, error) {
+func (vncd *VNCDriver) Create(srvUUID string) (string, *errors.HccErrorStack) {
 	var srvIP, port string
-	var err error
+	var es *errors.HccErrorStack = nil
 
 	logger.Logger.Print("Find exist VNC proxy websocket...")
 	vncd.createMutex.Lock()
@@ -47,18 +48,20 @@ func (vncd *VNCDriver) Create(srvUUID string) (string, error) {
 		logger.Logger.Println("[FAIL]")
 		logger.Logger.Print("Asking server ip to harp...")
 
-		srvIP, err = client.RC.GetServerIP(srvUUID)
-		if err != nil {
-			logger.Logger.Println("[FAIL]\n", err)
-			return "", err
+		srvIP, es = client.RC.GetServerIP(srvUUID)
+		if es.Len() > 0 {
+			logger.Logger.Println("[FAIL]")
+			es.Push(errors.NewHccError(errors.ViolinNoVNCDriverReceiveError, "GetServerIP"))
+			return "", es
 		}
 		logger.Logger.Println("[SUCCESS] -- ", srvIP)
 
 		logger.Logger.Print("Find available port...")
 		port = PD.GetAvailablePort()
 		if port == "0" {
-			logger.Logger.Println("[FAIL]\n", err)
-			return "", err
+			logger.Logger.Println("[FAIL]")
+			es.Push(errors.NewHccError(errors.ViolinNoVNCDriverReceiveError, "GetAvailablePort"))
+			return "", es
 		}
 		logger.Logger.Println("[SUCCESS] -- ", port)
 
@@ -89,10 +92,11 @@ func (vncd *VNCDriver) Create(srvUUID string) (string, error) {
 		args["target_port"] = vncd.vncPort
 		args["websocket_port"] = port
 
-		_, err = dao.CreateVNC(args)
+		_, err := dao.CreateVNC(args)
 		if err != nil {
 			logger.Logger.Println(err.Error())
-			return "", err
+			es.Push(err)
+			return "", es
 		}
 
 		vncd.serverConnectionMap.Store(srvUUID, 1)
@@ -127,7 +131,8 @@ func (vncd *VNCDriver) Create(srvUUID string) (string, error) {
 	return wsPort.(string), nil
 }
 
-func (vncd *VNCDriver) Delete(srvUUID string) error {
+func (vncd *VNCDriver) Delete(srvUUID string) *errors.HccErrorStack {
+	var es *errors.HccErrorStack = nil
 
 	vncd.addMutex.Lock()
 	if cn, b := vncd.serverConnectionMap.Load(srvUUID); b {
@@ -137,11 +142,14 @@ func (vncd *VNCDriver) Delete(srvUUID string) error {
 			// stop vnc proxy server
 			if proxy, b := vncd.serverProxyMap.Load(srvUUID); b {
 				logger.Logger.Println(srvUUID, " Proxy will close")
+				es = errors.NewHccErrorStack()
 				proxy.(*vncproxy.VncProxy).Shutdown()
-				dao.DeleteVNC(srvUUID)
+				if err := dao.DeleteVNC(srvUUID); err != nil {
+					es.Push(err)
+				}
 			}
 		}
 	}
 	vncd.addMutex.Unlock()
-	return nil
+	return es
 }

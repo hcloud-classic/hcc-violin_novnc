@@ -2,16 +2,17 @@ package server
 
 import (
 	"context"
-	"log"
 	"net"
 	"strconv"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"hcc/violin-novnc/action/grpc/errconv"
 	rpcnovnc "hcc/violin-novnc/action/grpc/pb/rpcviolin_novnc"
 
 	"hcc/violin-novnc/driver"
 	"hcc/violin-novnc/lib/config"
+	"hcc/violin-novnc/lib/errors"
 	"hcc/violin-novnc/lib/logger"
 )
 
@@ -30,19 +31,23 @@ func (s *server) CreateVNC(ctx context.Context, in *rpcnovnc.ReqNoVNC) (*rpcnovn
 
 func (s *server) ControlVNC(ctx context.Context, in *rpcnovnc.ReqControlVNC) (*rpcnovnc.ResControlVNC, error) {
 	var port string
-	var err error
+	var errStack *errors.HccErrorStack = nil
+	var result rpcnovnc.ResControlVNC
+
 	vnc := in.Vnc
 
 	switch vnc.Action {
 	case "CREATE":
-		port, err = driver.VNCD.Create(vnc.ServerUUID)
-		if err != nil {
-			return nil, err
+		port, errStack = driver.VNCD.Create(vnc.ServerUUID)
+		if errStack != nil {
+			result.HccErrorStack = *errconv.HccStackToGrpc(errStack)
+			return &result, nil
 		}
 	case "DELETE":
-		err = driver.VNCD.Delete(vnc.ServerUUID)
-		if err != nil {
-			return nil, err
+		errStack = driver.VNCD.Delete(vnc.ServerUUID)
+		if errStack != nil {
+			result.HccErrorStack = *errconv.HccStackToGrpc(errStack)
+			return &result, nil
 		}
 		port = "Success"
 	case "UPDATE":
@@ -51,14 +56,16 @@ func (s *server) ControlVNC(ctx context.Context, in *rpcnovnc.ReqControlVNC) (*r
 		logger.Logger.Println("Undefined Action: " + vnc.Action)
 	}
 
-	return &rpcnovnc.ResControlVNC{Port: port}, nil
+	result.Port = port
+
+	return &result, nil
 }
 
-func InitGRPCServer() error {
+func InitGRPCServer() {
 
 	lis, err := net.Listen("tcp", ":"+strconv.FormatInt(config.HTTP.Port, 10))
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		logger.Logger.Fatalf("failed to listen: %v", err)
 	}
 	defer lis.Close()
 	logger.Logger.Println("Opening server on port " + strconv.FormatInt(config.HTTP.Port, 10) + "...")
@@ -69,10 +76,8 @@ func InitGRPCServer() error {
 
 	err = srv.Serve(lis)
 	if err != nil {
-		log.Fatalf("failed to serve: %v", err)
+		logger.Logger.Fatalf("failed to serve: %v", err)
 	}
-
-	return err
 }
 
 func CleanGRPCServer() {

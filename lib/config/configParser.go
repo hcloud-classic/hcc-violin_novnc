@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/Terry-Mao/goconf"
-	"hcc/violin-novnc/lib/logger"
+	"hcc/violin-novnc/lib/errors"
 )
 
 var conf = goconf.New()
@@ -12,46 +12,46 @@ var err error
 func parseMysql() {
 	config.MysqlConfig = conf.Get("mysql")
 	if config.MysqlConfig == nil {
-		logger.Logger.Panicln("no mysql section")
+		errors.NewHccError(errors.ViolinNoVNCInternalParsingError, "mysql config").Fatal()
 	}
 
 	Mysql = mysql{}
 	Mysql.ID, err = config.MysqlConfig.String("id")
 	if err != nil {
-		logger.Logger.Panicln(err)
+		errors.NewHccError(errors.ViolinNoVNCInternalParsingError, "mysql id").Fatal()
 	}
 
 	Mysql.Password, err = config.MysqlConfig.String("password")
 	if err != nil {
-		logger.Logger.Panicln(err)
+		errors.NewHccError(errors.ViolinNoVNCInternalParsingError, "mysql password").Fatal()
 	}
 
 	Mysql.Address, err = config.MysqlConfig.String("address")
 	if err != nil {
-		logger.Logger.Panicln(err)
+		errors.NewHccError(errors.ViolinNoVNCInternalParsingError, "mysql address").Fatal()
 	}
 
 	Mysql.Port, err = config.MysqlConfig.Int("port")
 	if err != nil {
-		logger.Logger.Panicln(err)
+		errors.NewHccError(errors.ViolinNoVNCInternalParsingError, "mysql port").Fatal()
 	}
 
 	Mysql.Database, err = config.MysqlConfig.String("database")
 	if err != nil {
-		logger.Logger.Panicln(err)
+		errors.NewHccError(errors.ViolinNoVNCInternalParsingError, "mysql database").Fatal()
 	}
 }
 
 func parseHTTP() {
 	config.HTTPConfig = conf.Get("http")
 	if config.HTTPConfig == nil {
-		logger.Logger.Panicln("no http section")
+		errors.NewHccError(errors.ViolinNoVNCInternalParsingError, "http config").Fatal()
 	}
 
 	HTTP = http{}
 	HTTP.Port, err = config.HTTPConfig.Int("port")
 	if err != nil {
-		logger.Logger.Panicln(err)
+		errors.NewHccError(errors.ViolinNoVNCInternalParsingError, "http port").Fatal()
 	}
 
 }
@@ -59,28 +59,28 @@ func parseHTTP() {
 func parseHarp() {
 	config.HarpConfig = conf.Get("harp")
 	if config.HarpConfig == nil {
-		logger.Logger.Panicln("no harp section")
+		errors.NewHccError(errors.ViolinNoVNCInternalParsingError, "harp config").Fatal()
 	}
 
 	Harp = harp{}
 	Harp.Address, err = config.HarpConfig.String("harp_server_address")
 	if err != nil {
-		logger.Logger.Panicln(err)
+		errors.NewHccError(errors.ViolinNoVNCInternalParsingError, "harp server address").Fatal()
 	}
 	Harp.Port, err = config.HarpConfig.Int("harp_server_port")
 	if err != nil {
-		logger.Logger.Panicln(err)
+		errors.NewHccError(errors.ViolinNoVNCInternalParsingError, "harp server port").Fatal()
 	}
 	Harp.RequestTimeoutMs, err = config.HarpConfig.Int("harp_request_timeout_ms")
 	if err != nil {
-		logger.Logger.Panicln(err)
+		errors.NewHccError(errors.ViolinNoVNCInternalParsingError, "harp timeout").Fatal()
 	}
 }
 
 // Parser : Parse config file
 func Parser() {
 	if err = conf.Parse(configLocation); err != nil {
-		logger.Logger.Panicln(err)
+		errors.NewHccError(errors.ViolinNoVNCInternalParsingError, err.Error()).Fatal()
 	}
 
 	parseMysql()

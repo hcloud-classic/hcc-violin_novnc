@@ -41,7 +41,7 @@ func Prepare() bool {
 		if _, err = os.Stat("/var/log/" + LogName); os.IsNotExist(err) {
 			err = CreateDirIfNotExist("/var/log/" + LogName)
 			if err != nil {
-				panic(err)
+				log.Fatal(err)
 			}
 		}
 
@@ -56,7 +56,7 @@ func Prepare() bool {
 		FpLog, err := os.OpenFile("/var/log/"+LogName+"/"+
 			LogName+"_"+date+".log", os.O_CREATE|os.O_RDWR|os.O_APPEND, 0666)
 		if err != nil {
-			panic(err)
+			Logger = log.New(io.Writer(os.Stdout), LogName+"_logger: ", log.Ldate|log.Ltime)
 		}
 
 		Logger = log.New(io.MultiWriter(FpLog, os.Stdout), LogName+"_logger: ", log.Ldate|log.Ltime)

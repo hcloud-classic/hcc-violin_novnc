@@ -1,13 +1,14 @@
 package dao
 
 import (
+	"hcc/violin-novnc/lib/errors"
 	"hcc/violin-novnc/lib/logger"
 	"hcc/violin-novnc/lib/mysql"
 	"hcc/violin-novnc/model"
 )
 
 // CreateVNC : VNC DB createS
-func CreateVNC(args map[string]interface{}) (model.Vnc, error) {
+func CreateVNC(args map[string]interface{}) (model.Vnc, *errors.HccError) {
 	// fmt.Println("@@@params@@@\n", args["server_uuid"].(string), args["target_ip"].(string), args["target_port"].(string), args["websocket_port"].(string))
 	// fmt.Println("allocWsPort: ", allocWsPort)
 	var serverVnc model.Vnc
@@ -23,8 +24,7 @@ func CreateVNC(args map[string]interface{}) (model.Vnc, error) {
 	stmt, err := mysql.Db.Prepare(sql)
 
 	if err != nil {
-		logger.Logger.Println(err)
-		return serverVnc, err
+		return serverVnc, errors.NewHccError(errors.ViolinNoVNCInternalDBOperationFail, "sql Prepare : "+err.Error())
 	}
 	defer func() {
 		_ = stmt.Close()
@@ -33,8 +33,7 @@ func CreateVNC(args map[string]interface{}) (model.Vnc, error) {
 	result, err := stmt.Exec(serverVnc.ServerUUID, serverVnc.TargetIP, serverVnc.TargetPort, serverVnc.WebSocket, serverVnc.TargetPass, serverVnc.TargetIP, serverVnc.TargetPort, serverVnc.WebSocket)
 
 	if err != nil {
-		logger.Logger.Println("DB Insert Error", err)
-		return serverVnc, err
+		return serverVnc, errors.NewHccError(errors.ViolinNoVNCInternalDBOperationFail, "stmt Exec : "+err.Error())
 	}
 
 	serverVnc.Info = "Created"
@@ -42,13 +41,13 @@ func CreateVNC(args map[string]interface{}) (model.Vnc, error) {
 	return serverVnc, nil
 }
 
-func DeleteVNC(srvUUID string) error {
+func DeleteVNC(srvUUID string) *errors.HccError {
 	sql := "DELETE FROM `violin_novnc`.`server_vnc` WHERE server_uuid=\"" + srvUUID + "\""
 
 	stmt, err := mysql.Db.Query(sql)
 	if err != nil {
 		logger.Logger.Println(err.Error())
-		return err
+		return errors.NewHccError(errors.ViolinNoVNCInternalDBOperationFail, "sql Query : "+err.Error())
 	}
 	defer func() {
 		_ = stmt.Close()
@@ -57,14 +56,13 @@ func DeleteVNC(srvUUID string) error {
 	return nil
 }
 
-func GetVNCServerList() ([]string, error) {
+func GetVNCServerList() ([]string, *errors.HccError) {
 	var srvUUIDList []string
 	sql := "SELECT `server_uuid` FROM `violin_novnc`.`server_vnc`"
 
 	stmt, err := mysql.Db.Query(sql)
 	if err != nil {
-		logger.Logger.Println(err.Error())
-		return nil, err
+		return nil, errors.NewHccError(errors.ViolinNoVNCInternalDBOperationFail, "sql Query : "+err.Error())
 	}
 	defer func() {
 		_ = stmt.Close()
@@ -74,21 +72,19 @@ func GetVNCServerList() ([]string, error) {
 		var uuid string
 		err := stmt.Scan(&uuid)
 		if err != nil {
-			logger.Logger.Println(err.Error())
-			return nil, err
+			return nil, errors.NewHccError(errors.ViolinNoVNCInternalDBOperationFail, err.Error())
 		}
 		srvUUIDList = append(srvUUIDList, uuid)
 	}
 	return srvUUIDList, nil
 }
 
-func InitVNCServer() error {
+func InitVNCServer() *errors.HccError {
 	sql := "TRUNCATE TABLE `violin_novnc`.`server_vnc`"
 
 	stmt, err := mysql.Db.Query(sql)
 	if err != nil {
-		logger.Logger.Println(err.Error())
-		return err
+		return errors.NewHccError(errors.ViolinNoVNCInternalDBOperationFail, "sql Query : "+err.Error())
 	}
 	defer func() {
 		_ = stmt.Close()
