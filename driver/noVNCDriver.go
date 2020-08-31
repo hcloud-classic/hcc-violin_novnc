@@ -142,10 +142,9 @@ func (vncd *VNCDriver) Delete(srvUUID string) *errors.HccErrorStack {
 			// stop vnc proxy server
 			if proxy, b := vncd.serverProxyMap.Load(srvUUID); b {
 				logger.Logger.Println(srvUUID, " Proxy will close")
-				es = errors.NewHccErrorStack()
 				proxy.(*vncproxy.VncProxy).Shutdown()
 				if err := dao.DeleteVNC(srvUUID); err != nil {
-					es.Push(err)
+					es = errors.NewHccErrorStack(err)
 				}
 			}
 		}

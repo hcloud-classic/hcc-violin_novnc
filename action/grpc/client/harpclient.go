@@ -53,7 +53,7 @@ func (rc *RpcClient) GetServerIP(srvUUID string) (string, *errors.HccErrorStack)
 	if subnet := res.GetSubnet(); subnet != nil {
 		srvIP = strings.TrimRight(subnet.GetNetworkIP(), "0") + "1"
 	}
-	if es := res.GetErrStack(); es != nil {
+	if es := res.GetHccErrorStack(); es != nil {
 		errStack = errconv.GrpcStackToHcc(&es)
 	}
 

@@ -14,6 +14,7 @@ var LogName = "violin-novnc"
 
 // Logger : Pointer of logger
 var Logger *log.Logger
+var Flogger *log.Logger
 var once sync.Once
 
 // FpLog : File pointer of logger
@@ -60,6 +61,7 @@ func Prepare() bool {
 		}
 
 		Logger = log.New(io.MultiWriter(FpLog, os.Stdout), LogName+"_logger: ", log.Ldate|log.Ltime)
+		Flogger = log.New(io.Writer(os.Stdout), LogName+"_logger: ", log.Ldate|log.Ltime)
 
 		returnValue = true
 	})

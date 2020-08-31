@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"hcc/violin-novnc/lib/syscheck"
 	"testing"
 )
 
@@ -13,10 +12,6 @@ func Test_CreateDirIfNotExist(t *testing.T) {
 }
 
 func Test_Logger_Prepare(t *testing.T) {
-	err := syscheck.CheckRoot()
-	if err != nil {
-		t.Fatal("Failed to get root permission!")
-	}
 
 	if !Prepare() {
 		t.Fatal("Failed to prepare logger!")
