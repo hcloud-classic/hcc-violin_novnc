@@ -49,7 +49,7 @@ func (vncd *VNCDriver) Create(srvUUID string) (string, *errors.HccErrorStack) {
 		logger.Logger.Print("Asking server ip to harp...")
 
 		srvIP, es = client.RC.GetServerIP(srvUUID)
-		if es.Len() > 0 {
+		if es != nil {
 			logger.Logger.Println("[FAIL]")
 			es.Push(errors.NewHccError(errors.ViolinNoVNCDriverReceiveError, "GetServerIP"))
 			return "", es
