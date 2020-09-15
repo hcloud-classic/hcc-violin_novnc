@@ -46,14 +46,23 @@ type ServerConn struct {
 	quit chan struct{}
 }
 
+// func (c *IServerConn) UnreadByte() error {
+// 	return c.br.UnreadByte()
+// }
+
 func NewServerConn(c io.ReadWriter, cfg *ServerConfig) (*ServerConn, error) {
+	// if cfg.ClientMessageCh == nil {
+	// 	return nil, fmt.Errorf("ClientMessageCh nil")
+	// }
 
 	if len(cfg.ClientMessages) == 0 {
 		return nil, fmt.Errorf("ClientMessage 0")
 	}
 
 	return &ServerConn{
-		c:           c,
+		c: c,
+		//br:          bufio.NewReader(c),
+		//bw:          bufio.NewWriter(c),
 		cfg:         cfg,
 		quit:        make(chan struct{}),
 		encodings:   cfg.Encodings,
@@ -146,6 +155,7 @@ func (c *ServerConn) handle() error {
 		})
 	}()
 
+	//create a map of all message types
 	clientMessages := make(map[common.ClientMessageType]common.ClientMessage)
 	for _, m := range c.cfg.ClientMessages {
 		clientMessages[m.Type()] = m
@@ -169,19 +179,29 @@ func (c *ServerConn) handle() error {
 			}
 			parsedMsg, err := msg.Read(c)
 			logger.Logger.Printf("ServerConn.handle: got parsed messagetype, %v", parsedMsg)
+			//update connection for pixel format / color map changes
 			switch parsedMsg.Type() {
 			case common.SetPixelFormatMsgType:
+				// update pixel format
+				//logger.Logger.Println("ClientUpdater.Consume: updating pixel format")
 				pixFmtMsg := parsedMsg.(*MsgSetPixelFormat)
 				c.SetPixelFormat(&pixFmtMsg.PF)
 				if pixFmtMsg.PF.TrueColor != 0 {
 					c.SetColorMap(&common.ColorMap{})
 				}
 			}
+			////////
 
 			if err != nil {
 				logger.Logger.Printf("srv err %s", err.Error())
 				return err
 			}
+
+			//logger.Logger.Printf("IServerConn.Handle got ClientMessage: %s, %v", parsedMsg.Type(), parsedMsg)
+			//TODO: treat set encodings by allowing only supported encoding in proxy configurations
+			//// if parsedMsg.Type() == common.SetEncodingsMsgType{
+			//// 	c.cfg.Encodings
+			//// }
 
 			seg := &common.RfbSegment{
 				SegmentType: common.SegmentFullyParsedClientMessage,

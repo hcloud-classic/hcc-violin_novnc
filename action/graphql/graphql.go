@@ -13,7 +13,15 @@ var Schema, _ = graphql.NewSchema(
 	},
 )
 
-// GraphqlHandler : Show GraphQL GUI request form in web browser
+// GraphqlHandler : GraphQL schema handler
+//
+// Handler config options
+//
+// Schema : GraphQL schema definition variable name
+//
+// Pretty : Show sorted json code in GraphiQL
+//
+// GraphiQL : Show GraphQL GUI request form in web browser
 var GraphqlHandler = handler.New(&handler.Config{
 	Schema:   &Schema,
 	Pretty:   true,

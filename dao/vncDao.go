@@ -12,6 +12,7 @@ func CheckoutSpecificWSPort(WSPort string) (interface{}, error) {
 	var IsPortAvailable string
 
 	sql := "select if (isnull(server_uuid),'None','Using') from server_vnc where ws_port=?"
+	// sql := "select * from server_vnc where ws_port = ?"
 
 	err := mysql.Db.QueryRow(sql, WSPort).Scan(
 		&IsPortAvailable)
@@ -35,6 +36,7 @@ func FindAvailableWsPort() (interface{}, error) {
 
 	sql := "select * from server_vnc where ws_port=(select max(ws_port) from server_vnc) "
 	stmt, err := mysql.Db.Query(sql)
+	// fmt.Println("stmt: ", stmt)
 	if err != nil {
 		logger.Logger.Println(err)
 		return nil, err
@@ -61,10 +63,13 @@ func FindAvailableWsPort() (interface{}, error) {
 	}
 	return AvailablePort, nil
 
+	// strconv.Atoi(WebSocket) + 1
 }
 
-// CreateVNC : VNC DB create
+// CreateVNC : VNC DB createS
 func CreateVNC(args map[string]interface{}) (model.Vnc, error) {
+	// fmt.Println("@@@params@@@\n", args["server_uuid"].(string), args["target_ip"].(string), args["target_port"].(string), args["websocket_port"].(string))
+	// fmt.Println("allocWsPort: ", allocWsPort)
 	var serverVnc model.Vnc
 	serverVnc = model.Vnc{
 		ServerUUID:     args["server_uuid"].(string),
