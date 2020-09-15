@@ -32,5 +32,10 @@ func Prepare() error {
 
 	logger.Logger.Println("db is connected")
 
+	//_, err = Db.Exec("DELETE FROM `violin_novnc`.`server_vnc`;")
+	//if err != nil {
+	//	return err
+	//}
+
 	return nil
 }
