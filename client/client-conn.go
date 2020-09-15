@@ -511,7 +511,7 @@ func (c *ClientConn) mainLoop() {
 		reader.SendMessageStart(common.ServerMessageType(messageType))
 		reader.PublishBytes([]byte{byte(messageType)})
 
-		_/*parsedMsg*/, err := msg.Read(c, reader)
+		_ /*parsedMsg*/, err := msg.Read(c, reader)
 		if err != nil {
 			logger.Logger.Printf("ClientConn.MainLoop: error parsing message, %s", err)
 			break
