@@ -36,6 +36,7 @@ const (
 var functionList = [...]string{"", "Internal", "Driver", "GraphQL", "Grpc", "SQL", "RabbitMQ"}
 
 const (
+	// Use Generally
 	initFail uint64 = 1 + iota
 	connectionFail
 	undefinedError
@@ -48,13 +49,56 @@ const (
 	receiveError  // get error as result from server
 	parsingError
 	tokenExpired
-	dbOperationFail
+	operationFail
+	noResult
+	timestampConversionError
+	UUIDGenerationError
+
+	// clarinet specific
+
+	// piccolo specific
+	prepareError
+	executeError
+	tokenGenerationError
+	loginFailed
+
+	// cello specific
+
+	// violin-scheduler specific
+
+	// flute specific
+	ipmiError
+
+	// viola specific
+
+	// piano specific
+
+	// harp specific
+	interfaceAddrLookupError
+	pfError
+	dhcpdError
+	fileError
+	ifconfigError
+	IPAddressError
+	subnetInUseError
+	subnetNotAllocatedError
+	adaptiveIPAllocatedError
+
+	// violin-novnc specific
+
+	// violin specific
+	createServerFailed
+	createServerRoutineError
+	getAvailableNodesError
+	getNodesError
+	serverNodePresentError
 )
 
 var actionList = [...]string{
 	"",
 	"Initialize fail -> ",
 	"Connection fail -> ",
+	"Undefined error -> ",
 	"Argumnet error -> ",
 	"JSON marshal fail -> ",
 	"JSON unmarshal fail -> ",
@@ -65,6 +109,48 @@ var actionList = [...]string{
 	"Parsing error -> ",
 	"Token Expired -> ",
 	"DB operationfail -> ",
+	"DB no result",
+	"timestamp conversion error -> ",
+	"UUID generation error -> ",
+
+	// clarinet specific
+
+	// piccolo specific
+	"Prepare error -> ",
+	"Execute error -> ",
+	"Token Generation Error -> ",
+	"Login failed -> ",
+
+	// cello specific
+
+	// violin-scheduler specific
+
+	// flute specific
+	"IPMI error -> ",
+
+	// viola specific
+
+	// piano specific
+
+	// harp specific
+	"interface address lookup error -> ",
+	"PF error -> ",
+	"DHCPD error -> ",
+	"file error -> ",
+	"ifconfig error -> ",
+	"IP address error -> ",
+	"Subnet In Use error -> ",
+	"Subnet not allocated error -> ",
+	"AdaptiveIP allocated error -> ",
+
+	// violin-novnc specific
+
+	// violin specific
+	"Create Server failed -> ",
+	"Create Server routine error ->",
+	"Get available nodes error ->",
+	"Get nodes error ->",
+	"ServerNode present error ->",
 }
 
 var errlogger *log.Logger
@@ -76,8 +162,8 @@ func SetErrLogger(l *log.Logger) {
 /*    HCCERROR    */
 
 type HccError struct {
-	ErrCode uint64 // decimal error code
-	ErrText string // error string
+	ErrCode uint64 `json:"errcode"` // decimal error code
+	ErrText string `json:"errtext"` // error string
 }
 
 func NewHccError(errorCode uint64, errorText string) *HccError {
@@ -99,12 +185,16 @@ func (e HccError) Code() uint64 {
 	return e.ErrCode
 }
 
+func (e HccError) Text() string {
+	return e.ErrText
+}
+
 func (e HccError) ToString() string {
 	m := e.ErrCode / 10000
 	f := e.ErrCode % 10000 / 1000
 	a := e.ErrCode % 1000
 
-	return "[" + middleWareList[m] + "] " + functionList[f] + ": " + actionList[a] + strconv.FormatUint(e.ErrCode, 10) + " " + e.ErrText
+	return "[" + middleWareList[m] + "] Code :" + strconv.FormatUint(e.ErrCode, 10) + " (" + functionList[f] + ") " + actionList[a] + " " + e.ErrText
 }
 
 func (e HccError) Println() {
@@ -117,12 +207,10 @@ func (e HccError) Fatal() {
 
 /*    HCCERRORSTACK    */
 
-type HccErrorStack struct {
-	errStack []HccError
-}
+type HccErrorStack []HccError
 
 func NewHccErrorStack(errList ...*HccError) *HccErrorStack {
-	es := HccErrorStack{errStack: []HccError{HccError{ErrCode: 0, ErrText: ""}}}
+	es := HccErrorStack{HccError{ErrCode: 0, ErrText: ""}}
 
 	for _, err := range errList {
 		es.Push(err)
@@ -135,21 +223,21 @@ func (es *HccErrorStack) Len() int {
 }
 
 func (es *HccErrorStack) len() int {
-	return len(es.errStack)
+	return len(*es)
 }
 
 func (es *HccErrorStack) Pop() *HccError {
 	l := es.len()
 	if l > 1 {
-		err := es.errStack[l-1]
-		es.errStack = es.errStack[:l-1]
+		err := (*es)[l-1]
+		*es = (*es)[:l-1]
 		return &err
 	}
 	return nil
 }
 
 func (es *HccErrorStack) Push(err *HccError) {
-	es.errStack = append(es.errStack, *err)
+	*es = append(*es, *err)
 }
 
 // Dump() will clean stack
@@ -158,6 +246,11 @@ func (es *HccErrorStack) Dump() *HccError {
 	if es.Len() == 0 {
 		return nil
 	}
+
+	if (*es)[0].ErrCode == 0 {
+		errlogger.Fatal("Error Stack is already converted to report form. Cannot dump.\n")
+	}
+
 	errlogger.Printf("------ [Dump Error Stack] ------\n")
 	errlogger.Printf("Stack Size : %v\n", es.Len())
 	firstErr = es.Pop()
@@ -167,4 +260,16 @@ func (es *HccErrorStack) Dump() *HccError {
 	}
 	errlogger.Println("--------- [ End Here ] ---------")
 	return firstErr
+}
+
+func (es *HccErrorStack) ConvertReportForm() *HccErrorStack {
+	if es.Len() > 0 {
+		*es = (*es)[1:]
+		for idx := 0; idx < es.len(); idx++ {
+			(*es)[idx].ErrText = "#" + strconv.Itoa(idx) + " " + (*es)[idx].ToString()
+		}
+	} else {
+		*es = nil
+	}
+	return es
 }

@@ -54,6 +54,8 @@ func (s *server) ControlVNC(ctx context.Context, in *rpcnovnc.ReqControlVNC) (*r
 	case "INFO":
 	default:
 		logger.Logger.Println("Undefined Action: " + vnc.Action)
+		errStack = errors.NewHccErrorStack(errors.NewHccError(errors.ViolinNoVNCGrpcOperationFail, "Undefined Action("+vnc.Action+")"))
+		result.HccErrorStack = *errconv.HccStackToGrpc(errStack)
 	}
 
 	result.Port = port

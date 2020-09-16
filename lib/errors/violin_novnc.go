@@ -4,7 +4,7 @@ const (
 	ViolinNoVNCInternalInitFail        uint64 = violinNoVNC + internal + initFail
 	ViolinNoVNCInternalConnectionFail  uint64 = violinNoVNC + internal + connectionFail
 	ViolinNoVNCInternalParsingError    uint64 = violinNoVNC + internal + parsingError
-	ViolinNoVNCInternalDBOperationFail uint64 = violinNoVNC + internal + dbOperationFail
+	ViolinNoVNCInternalDBOperationFail uint64 = violinNoVNC + internal + operationFail
 
 	ViolinNoVNCDriverRequestError       uint64 = violinNoVNC + driver + requestError
 	ViolinNoVNCDriverResponseError      uint64 = violinNoVNC + driver + responseError
@@ -20,5 +20,5 @@ const (
 	ViolinNoVNCGrpcParsingError       uint64 = violinNoVNC + grpc + parsingError
 	ViolinNoVNCGrpcConnectionFail     uint64 = violinNoVNC + grpc + connectionFail
 	ViolinNoVNCGrpcUndefinedError     uint64 = violinNoVNC + grpc + undefinedError
-	ViolinNoVNCGrpcDBOperationFail    uint64 = violinNoVNC + grpc + dbOperationFail
+	ViolinNoVNCGrpcOperationFail      uint64 = violinNoVNC + grpc + operationFail
 )
