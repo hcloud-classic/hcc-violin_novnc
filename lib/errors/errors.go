@@ -247,7 +247,7 @@ func (es *HccErrorStack) Dump() *HccError {
 		return nil
 	}
 
-	if (*es)[0].ErrCode == 0 {
+	if (*es)[0].ErrCode != 0 {
 		errlogger.Fatal("Error Stack is already converted to report form. Cannot dump.\n")
 	}
 

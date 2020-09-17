@@ -42,6 +42,7 @@ func (vncd *VNCDriver) Create(srvUUID string) (string, *errors.HccErrorStack) {
 	var es *errors.HccErrorStack = nil
 
 	logger.Logger.Print("Find exist VNC proxy websocket...")
+	vncd.createMutex.Lock()
 	wsPort, ok := vncd.serverWSMap.Load(srvUUID)
 	if !ok {
 		logger.Logger.Println("[FAIL]")
@@ -51,6 +52,7 @@ func (vncd *VNCDriver) Create(srvUUID string) (string, *errors.HccErrorStack) {
 		if es != nil {
 			logger.Logger.Println("[FAIL]")
 			es.Push(errors.NewHccError(errors.ViolinNoVNCDriverReceiveError, "GetServerIP"))
+			vncd.createMutex.Unlock()
 			return "", es
 		}
 		logger.Logger.Println("[SUCCESS] -- ", srvIP)
@@ -65,6 +67,8 @@ func (vncd *VNCDriver) Create(srvUUID string) (string, *errors.HccErrorStack) {
 		logger.Logger.Println("[SUCCESS] -- ", port)
 
 		vncd.serverWSMap.Store(srvUUID, port)
+		vncd.createMutex.Unlock()
+		vncd.addMutex.Lock()
 
 		wsURL := "http://0.0.0.0:" + port + "/" + srvUUID + "_" + port
 
@@ -93,10 +97,12 @@ func (vncd *VNCDriver) Create(srvUUID string) (string, *errors.HccErrorStack) {
 		if err != nil {
 			logger.Logger.Println(err.Error())
 			es.Push(err)
+			vncd.addMutex.Unlock()
 			return "", es
 		}
 
 		vncd.serverConnectionMap.Store(srvUUID, 1)
+		vncd.addMutex.Unlock()
 
 		go func() {
 			logger.Logger.Print("Create VNC Proxy...")
@@ -115,12 +121,14 @@ func (vncd *VNCDriver) Create(srvUUID string) (string, *errors.HccErrorStack) {
 
 		return port, nil
 	}
+	vncd.createMutex.Unlock()
 	logger.Logger.Println("[SUCCESS] -- " + port)
 
+	vncd.addMutex.Lock()
 	if cn, b := vncd.serverConnectionMap.Load(srvUUID); b {
 		vncd.serverConnectionMap.Store(srvUUID, cn.(int)+1)
 	}
-
+	vncd.addMutex.Unlock()
 	return wsPort.(string), nil
 }
 

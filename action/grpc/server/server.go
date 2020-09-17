@@ -40,13 +40,13 @@ func (s *server) ControlVNC(ctx context.Context, in *rpcnovnc.ReqControlVNC) (*r
 	case "CREATE":
 		port, errStack = driver.VNCD.Create(vnc.ServerUUID)
 		if errStack != nil {
-			result.HccErrorStack = *errconv.HccStackToGrpc(errStack)
+			result.HccErrorStack = errconv.HccStackToGrpc(errStack)
 			return &result, nil
 		}
 	case "DELETE":
 		errStack = driver.VNCD.Delete(vnc.ServerUUID)
 		if errStack != nil {
-			result.HccErrorStack = *errconv.HccStackToGrpc(errStack)
+			result.HccErrorStack = errconv.HccStackToGrpc(errStack)
 			return &result, nil
 		}
 		port = "Success"
@@ -55,7 +55,7 @@ func (s *server) ControlVNC(ctx context.Context, in *rpcnovnc.ReqControlVNC) (*r
 	default:
 		logger.Logger.Println("Undefined Action: " + vnc.Action)
 		errStack = errors.NewHccErrorStack(errors.NewHccError(errors.ViolinNoVNCGrpcOperationFail, "Undefined Action("+vnc.Action+")"))
-		result.HccErrorStack = *errconv.HccStackToGrpc(errStack)
+		result.HccErrorStack = errconv.HccStackToGrpc(errStack)
 	}
 
 	result.Port = port
