@@ -4,6 +4,7 @@ import (
 	"context"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"google.golang.org/grpc"
@@ -13,12 +14,13 @@ import (
 	"hcc/violin-novnc/lib/logger"
 )
 
-var harpconn grpc.ClientConn
+var harpconn *grpc.ClientConn
 
-func initHarp() error {
+func initHarp(wg *sync.WaitGroup) error {
+	var err error
 	addr := config.Harp.Address + ":" + strconv.FormatInt(config.Harp.Port, 10)
 	logger.Logger.Println("Try connect to harp " + addr)
-	harpconn, err := grpc.Dial(addr, grpc.WithInsecure(), grpc.WithBlock())
+	harpconn, err = grpc.Dial(addr, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		logger.Logger.Fatalf("Connect Harp failed: %v", err)
 		return err
@@ -27,6 +29,7 @@ func initHarp() error {
 	RC.harp = rpcharp.NewHarpClient(harpconn)
 	logger.Logger.Println("GRPC connection to harp created")
 
+	wg.Done()
 	return nil
 }
 

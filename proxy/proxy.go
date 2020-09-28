@@ -1,7 +1,6 @@
 package proxy
 
 import (
-	"fmt"
 	"hcc/violin-novnc/client"
 	"hcc/violin-novnc/common"
 	"hcc/violin-novnc/encodings"
@@ -21,6 +20,7 @@ type VncProxy struct {
 	SingleSession    *VncSession // to be used when not using sessions
 	UsingSessions    bool        //false = single session - defined in the var above
 	sessionManager   *SessionManager
+	wsServer         *server.WsServer
 }
 
 func (vp *VncProxy) createClientConnection(target string, vncPass string) (*client.ClientConn, error) {
@@ -185,21 +185,14 @@ func (vp *VncProxy) StartListening() error {
 	}
 	cfg := qwe
 
-	if vp.TCPListeningURL != "" && vp.WsListeningURL != "" {
-		logger.Logger.Printf("running two listeners: tcp port: %s, ws url: %s", vp.TCPListeningURL, vp.WsListeningURL)
-
-		go server.WsServe(vp.WsListeningURL, cfg)
-		server.TcpServe(vp.TCPListeningURL, cfg)
-	}
-	fmt.Println("####", vp.WsListeningURL)
 	if vp.WsListeningURL != "" {
 		logger.Logger.Printf("running ws listener url: %s", vp.WsListeningURL)
-		server.WsServe(vp.WsListeningURL, cfg)
-	}
-	if vp.TCPListeningURL != "" {
-		logger.Logger.Printf("running tcp listener on port: %s", vp.TCPListeningURL)
-		server.TcpServe(vp.TCPListeningURL, cfg)
+		server.WsServe(vp.WsListeningURL, cfg, &vp.wsServer)
 	}
 
 	return nil
+}
+
+func (vp *VncProxy) Shutdown() {
+	vp.wsServer.Shutdown()
 }

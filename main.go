@@ -2,10 +2,8 @@ package main
 
 import (
 	"log"
-	//"sync"
 
-	//"hcc/violin-novnc/action/graphql"
-	//"hcc/violin-novnc/driver"
+	"hcc/violin-novnc/driver"
 	"hcc/violin-novnc/driver/grpccli"
 	"hcc/violin-novnc/driver/grpcsrv"
 	"hcc/violin-novnc/lib/config"
@@ -37,6 +35,7 @@ func end() {
 	mysql.Db.Close()
 	logger.FpLog.Close()
 	grpccli.CleanGRPCClient()
+	grpcsrv.CleanGRPCServer()
 
 }
 
@@ -44,5 +43,6 @@ func main() {
 	defer end()
 
 	grpccli.InitGRPCClient()
+	driver.VNCD.Prepare() // need harp to create proxy
 	grpcsrv.InitGRPCServer()
 }

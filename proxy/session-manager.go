@@ -4,6 +4,10 @@ type SessionManager struct {
 	sessions map[string]*VncSession
 }
 
+var SM = SessionManager{
+	sessions: make(map[string]*VncSession),
+}
+
 func (s *SessionManager) GetSession(sessionId string) (*VncSession, error) {
 	return s.sessions[sessionId], nil
 }

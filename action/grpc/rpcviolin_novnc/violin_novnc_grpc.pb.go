@@ -18,7 +18,7 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type NovncClient interface {
 	CreateVNC(ctx context.Context, in *ReqNoVNC, opts ...grpc.CallOption) (*ResNoVNC, error)
-	ControlVNC(ctx context.Context, in *ReqNoVNC, opts ...grpc.CallOption) (*ResNoVNC, error)
+	ControlVNC(ctx context.Context, in *ReqControlVNC, opts ...grpc.CallOption) (*ResControlVNC, error)
 }
 
 type novncClient struct {
@@ -38,8 +38,8 @@ func (c *novncClient) CreateVNC(ctx context.Context, in *ReqNoVNC, opts ...grpc.
 	return out, nil
 }
 
-func (c *novncClient) ControlVNC(ctx context.Context, in *ReqNoVNC, opts ...grpc.CallOption) (*ResNoVNC, error) {
-	out := new(ResNoVNC)
+func (c *novncClient) ControlVNC(ctx context.Context, in *ReqControlVNC, opts ...grpc.CallOption) (*ResControlVNC, error) {
+	out := new(ResControlVNC)
 	err := c.cc.Invoke(ctx, "/RpcNoVNC.novnc/ControlVNC", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (c *novncClient) ControlVNC(ctx context.Context, in *ReqNoVNC, opts ...grpc
 // for forward compatibility
 type NovncServer interface {
 	CreateVNC(context.Context, *ReqNoVNC) (*ResNoVNC, error)
-	ControlVNC(context.Context, *ReqNoVNC) (*ResNoVNC, error)
+	ControlVNC(context.Context, *ReqControlVNC) (*ResControlVNC, error)
 	mustEmbedUnimplementedNovncServer()
 }
 
@@ -63,7 +63,7 @@ type UnimplementedNovncServer struct {
 func (*UnimplementedNovncServer) CreateVNC(context.Context, *ReqNoVNC) (*ResNoVNC, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateVNC not implemented")
 }
-func (*UnimplementedNovncServer) ControlVNC(context.Context, *ReqNoVNC) (*ResNoVNC, error) {
+func (*UnimplementedNovncServer) ControlVNC(context.Context, *ReqControlVNC) (*ResControlVNC, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ControlVNC not implemented")
 }
 func (*UnimplementedNovncServer) mustEmbedUnimplementedNovncServer() {}
@@ -91,7 +91,7 @@ func _Novnc_CreateVNC_Handler(srv interface{}, ctx context.Context, dec func(int
 }
 
 func _Novnc_ControlVNC_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReqNoVNC)
+	in := new(ReqControlVNC)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -103,7 +103,7 @@ func _Novnc_ControlVNC_Handler(srv interface{}, ctx context.Context, dec func(in
 		FullMethod: "/RpcNoVNC.novnc/ControlVNC",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NovncServer).ControlVNC(ctx, req.(*ReqNoVNC))
+		return srv.(NovncServer).ControlVNC(ctx, req.(*ReqControlVNC))
 	}
 	return interceptor(ctx, in, info, handler)
 }
