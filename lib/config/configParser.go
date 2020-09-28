@@ -54,11 +54,27 @@ func parseHTTP() {
 		logger.Logger.Panicln(err)
 	}
 
-	HTTP.Port, err = config.HTTPConfig.Int("port")
+}
+
+func parseHarp() {
+	config.HarpConfig = conf.Get("harp")
+	if config.HarpConfig == nil {
+		logger.Logger.Panicln("no harp section")
+	}
+
+	Harp = harp{}
+	Harp.Address, err = config.HarpConfig.String("harp_server_address")
 	if err != nil {
 		logger.Logger.Panicln(err)
 	}
-
+	Harp.Port, err = config.HarpConfig.Int("harp_server_port")
+	if err != nil {
+		logger.Logger.Panicln(err)
+	}
+	Harp.RequestTimeoutMs, err = config.HarpConfig.Int("harp_request_timeout_ms")
+	if err != nil {
+		logger.Logger.Panicln(err)
+	}
 }
 
 // Parser : Parse config file
@@ -69,4 +85,5 @@ func Parser() {
 
 	parseMysql()
 	parseHTTP()
+	parseHarp()
 }

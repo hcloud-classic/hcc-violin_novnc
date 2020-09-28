@@ -1,38 +1,48 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-	"strconv"
+	"log"
 
-	"hcc/violin-novnc/action/graphql"
-	//"hcc/violin-novnc/driver"
-	vncEnd "hcc/violin-novnc/end"
-	vncInit "hcc/violin-novnc/init"
+	"hcc/violin-novnc/driver"
+	"hcc/violin-novnc/driver/grpccli"
+	"hcc/violin-novnc/driver/grpcsrv"
 	"hcc/violin-novnc/lib/config"
 	"hcc/violin-novnc/lib/logger"
+	"hcc/violin-novnc/lib/mysql"
+	"hcc/violin-novnc/lib/syscheck"
 )
 
 func init() {
-	err := vncInit.MainInit()
+	err := syscheck.CheckRoot()
 	if err != nil {
-		fmt.Println(err)
+		log.Panic(err)
+	}
+
+	if !logger.Prepare() {
+		log.Panic("error occurred while preparing logger")
+	}
+
+	config.Parser()
+
+	err = mysql.Prepare()
+	if err != nil {
+		logger.FpLog.Close()
+		log.Panic(err)
 	}
 }
+
+func end() {
+	mysql.Db.Close()
+	logger.FpLog.Close()
+	grpccli.CleanGRPCClient()
+	grpcsrv.CleanGRPCServer()
+
+}
+
 func main() {
-	defer func() {
-		vncEnd.MainEnd()
-	}()
+	defer end()
 
-	// driver.RunProcxy("/var/log/violin-novnc/recordings/a/", "172.18.0.1:5901", "qwe1212", "5905")
-	fmt.Println(config.HTTP.Port)
-
-	http.Handle("/graphql", graphql.GraphqlHandler)
-	logger.Logger.Println("Opening server on port " + strconv.Itoa(int(config.HTTP.Port)) + "...")
-	err := http.ListenAndServe(":"+strconv.Itoa(int(config.HTTP.Port)), nil)
-	if err != nil {
-		logger.Logger.Println(err)
-		logger.Logger.Println("Failed to prepare http server!")
-		return
-	}
+	grpccli.InitGRPCClient()
+	driver.VNCD.Prepare() // need harp to create proxy
+	grpcsrv.InitGRPCServer()
 }
