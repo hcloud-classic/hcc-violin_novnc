@@ -4,21 +4,74 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/graphql-go/graphql"
-	"hcc/violin-novnc/dao"
-	"hcc/violin-novnc/lib/logger"
-	"hcc/violin-novnc/model"
-	vncproxy "hcc/violin-novnc/proxy"
 	"math/rand"
 	"net"
 	"os"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/graphql-go/graphql"
+
+	"hcc/violin-novnc/dao"
+	"hcc/violin-novnc/driver/grpccli"
+	"hcc/violin-novnc/lib/logger"
+	"hcc/violin-novnc/model"
+	vncproxy "hcc/violin-novnc/proxy"
 )
 
-//**node scheduling argument */
-// cpu, mem, end of bmc ip address
+type VNCManager struct {
+	serverIPMap map[string]string /* [ServerUUID] ServerIP */
+	serverWSMap map[string]string /* [ServerIP] Websocket */
+	vncPort     string
+	vncPasswd   string
+}
+
+var VNCM = VNCManager{
+	serverIPMap: make(map[string]string),
+	serverWSMap: make(map[string]string),
+	vncPort:     "5901",
+	vncPasswd:   "qwe1212",
+}
+
+func (vncm *VNCManager) Create(token, srvUUID string) (string, error) {
+	var srvIP string
+	var err error
+	logger.Logger.Println("Find server ip...")
+	srvIP, ok := vncm.serverIPMap[srvUUID]
+	if !ok {
+		logger.Logger.Println("Asking server ip to harp")
+		srvIP, err = grpccli.RC.GetServerIP(srvUUID)
+		if err != nil {
+			logger.Logger.Println(err)
+			return "", err
+		}
+		vncm.serverIPMap[srvUUID] = srvIP
+	}
+	port := PM.GetAvailablePort()
+	if port == "0" {
+		return "", errors.New("No more websocket port available")
+	}
+
+	wsURL := "http://0.0.0.0:" + port + "/" + srvUUID + "_" + port
+
+	proxy := &vncproxy.VncProxy{
+		WsListeningURL: wsURL, // empty = not listening on ws
+		SingleSession: &vncproxy.VncSession{
+			Target:         srvIP + ":" + port,
+			TargetPort:     vncm.vncPort,
+			TargetPassword: vncm.vncPasswd, //"vncPass",
+			ID:             "dummySession" + port,
+			Status:         vncproxy.SessionStatusInit,
+			Type:           vncproxy.SessionTypeProxyPass,
+		}, // to be used when not using sessions
+		UsingSessions: false, //false = single session - defined in the var above
+	}
+
+	go proxy.StartListening()
+
+	return port, nil
+}
 
 //RunProcxy :RunProcxy
 func RunProcxy(params graphql.ResolveParams) error {
@@ -31,37 +84,14 @@ func RunProcxy(params graphql.ResolveParams) error {
 	targetVncPass = params.Args["target_pass"].(string)
 	wsPort = params.Args["websocket_port"].(string)
 	wsURL := "http://0.0.0.0:" + wsPort + "/" + params.Args["server_uuid"].(string) + "_" + wsPort
-	//recordDir := "/var/log/violin-novnc/recordings/" + params.Args["server_uuid"].(string) + "_" + wsPort
 	recordDir := ""
 	//Not use
 	fmt.Println(recordDir, "   ", targetVnc, "    ", targetVncPass, "    ", wsPort)
-
-	//err := logger.CreateDirIfNotExist("/var/log/violin-novnc/recordings/")
-	//if err != nil {
-	//	logger.Logger.Println(err)
-	//	return err
-	//}
-
-	// err = logger.CreateDirIfNotExist(recordDir)
-	// if err != nil {
-	// 	logger.Logger.Println(err)
-	// 	return err
-	// }
 
 	var vncPass string
 	var targetVncPort string
 	var targetVncHost string
 	var tcpPort string
-	// var wsPort = flag.String("wsPort", "", "websocket port")
-	// var targetVncPass = flag.String("targPass", "", "target vnc password")
-	// var recordDir = flag.String("recDir", "", "path to save FBS recordings WILL NOT RECORD if not defined.")
-	// var targetVnc = flag.String("target", "", "target vnc server (host:port or /path/to/unix.socket)")
-	// var tcpPort = flag.String("tcpPort", "", "tcp port")
-
-	// var vncPass = flag.String("vncPass", "", "password on incoming vnc connections to the proxy, defaults to no password")
-	// var targetVncPort = flag.String("targPort", "", "target vnc server port (deprecated, use -target)")
-	// var targetVncHost = flag.String("targHost", "", "target vnc server host (deprecated, use -target)")
-	// var logLevel = flag.String("logLevel", "info", "change logging level")
 
 	if tcpPort == "" && wsPort == "" {
 		logger.Logger.Println("no listening port defined")
