@@ -2,16 +2,11 @@ package client
 
 import (
 	"fmt"
-	_init "hcc/violin-novnc/init"
 	"net"
 	"testing"
 )
 
 func newMockServer(t *testing.T, version string) string {
-	err := _init.LoggerInit()
-	if err != nil {
-		t.Fatal("looger not ready")
-	}
 
 	ln, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
@@ -68,10 +63,6 @@ func newMockServer(t *testing.T, version string) string {
 // }
 
 func TestParseProtocolVersion(t *testing.T) {
-	err := _init.LoggerInit()
-	if err != nil {
-		t.Fatal("looger not ready")
-	}
 
 	tests := []struct {
 		proto        []byte
