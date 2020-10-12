@@ -120,6 +120,7 @@ func (vncd *VNCDriver) Create(srvUUID string) (string, *errors.HccErrorStack) {
 	if cn, b := vncd.serverConnectionMap.Load(srvUUID); b {
 		vncd.serverConnectionMap.Store(srvUUID, cn.(int)+1)
 	}
+	vncd.addMutex.Unlock()
 
 	return wsPort.(string), nil
 }
