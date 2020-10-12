@@ -1,48 +1,40 @@
 package main
 
 import (
-	"log"
-
+	"hcc/violin-novnc/action/grpc/client"
+	"hcc/violin-novnc/action/grpc/server"
 	"hcc/violin-novnc/driver"
-	"hcc/violin-novnc/driver/grpccli"
-	"hcc/violin-novnc/driver/grpcsrv"
 	"hcc/violin-novnc/lib/config"
 	"hcc/violin-novnc/lib/logger"
 	"hcc/violin-novnc/lib/mysql"
-	"hcc/violin-novnc/lib/syscheck"
 )
 
 func init() {
-	err := syscheck.CheckRoot()
+	err := logger.Init()
 	if err != nil {
-		log.Panic(err)
-	}
-
-	if !logger.Prepare() {
-		log.Panic("error occurred while preparing logger")
+		err.Fatal()
 	}
 
 	config.Parser()
 
-	err = mysql.Prepare()
+	err = mysql.Init()
 	if err != nil {
-		logger.FpLog.Close()
-		log.Panic(err)
+		defer logger.End()
+		err.Fatal()
 	}
 }
 
 func end() {
-	mysql.Db.Close()
-	logger.FpLog.Close()
-	grpccli.CleanGRPCClient()
-	grpcsrv.CleanGRPCServer()
-
+	mysql.End()
+	logger.End()
+	client.CleanGRPCClient()
+	server.CleanGRPCServer()
 }
 
 func main() {
 	defer end()
 
-	grpccli.InitGRPCClient()
+	client.InitGRPCClient()
 	driver.VNCD.Prepare() // need harp to create proxy
-	grpcsrv.InitGRPCServer()
+	server.InitGRPCServer()
 }
