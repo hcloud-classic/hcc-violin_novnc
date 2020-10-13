@@ -1,18 +1,12 @@
 package proxy
 
 import (
-	_init "hcc/violin-novnc/init"
 	"testing"
 )
 
 func TestProxy(t *testing.T) {
 	//create default session if required
 	t.Skip("this isn't an automated test, just an entrypoint for debugging")
-
-	err := _init.LoggerInit()
-	if err != nil {
-		t.Fatal("looger not ready")
-	}
 
 	proxy := &VncProxy{
 		WsListeningURL:  "http://0.0.0.0:7778/", // empty = not listening on ws
