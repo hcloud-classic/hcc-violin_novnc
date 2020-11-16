@@ -4,10 +4,10 @@ import (
 	"testing"
 	"time"
 
-	"hcc/violin-novnc/common"
-	"hcc/violin-novnc/encodings"
 	"hcc/violin-novnc/lib/logger"
-	"hcc/violin-novnc/server"
+	"hcc/violin-novnc/lib/novnc/common"
+	"hcc/violin-novnc/lib/novnc/encodings"
+	"hcc/violin-novnc/lib/novnc/server"
 )
 
 func TestServer(t *testing.T) {
@@ -54,7 +54,7 @@ func TestServer(t *testing.T) {
 	}
 
 	url := "http://localhost:7777/"
-	go server.WsServe(url, cfg)
+	go server.WsServe(url, cfg, nil)
 	go server.TcpServe(":5904", cfg)
 
 	for {

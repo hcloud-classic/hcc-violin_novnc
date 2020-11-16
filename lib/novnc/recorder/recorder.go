@@ -143,7 +143,7 @@ func (r *Recorder) HandleRfbSegment(data *common.RfbSegment) error {
 		case common.Bell:
 		case common.ServerCutText:
 		default:
-			logger.Logger.Println("Recorder.HandleRfbSegment: unknown message type:" + string(data.UpcomingObjectType))
+			logger.Logger.Println("Recorder.HandleRfbSegment: unknown message type:" + string(rune(data.UpcomingObjectType)))
 		}
 	case common.SegmentConnectionClosed:
 		r.writeToDisk()

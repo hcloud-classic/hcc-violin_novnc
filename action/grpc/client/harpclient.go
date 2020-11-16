@@ -56,6 +56,5 @@ func (rc *RpcClient) GetServerIP(srvUUID string) (string, *errors.HccErrorStack)
 	if es := res.GetHccErrorStack(); es != nil {
 		errStack = errconv.GrpcStackToHcc(&es)
 	}
-
 	return srvIP, errStack
 }
