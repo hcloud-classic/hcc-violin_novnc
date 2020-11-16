@@ -8,6 +8,7 @@ import (
 	"hcc/violin-novnc/lib/novnc/player"
 	listeners "hcc/violin-novnc/lib/novnc/recorder"
 	"hcc/violin-novnc/lib/novnc/server"
+
 	"net"
 	"path"
 )
@@ -93,10 +94,7 @@ func (vp *VncProxy) newServerConnHandler(cfg *server.ServerConfig, sconn *server
 
 	session.Status = SessionStatusInit
 	if session.Type == SessionTypeProxyPass || session.Type == SessionTypeRecordingProxy {
-		target := session.Target
-		if session.TargetHostname != "" && session.TargetPort != "" {
-			target = session.TargetHostname + ":" + session.TargetPort
-		}
+		target := session.Target + ":" + session.TargetPort
 
 		cconn, err := vp.createClientConnection(target, session.TargetPassword)
 		if err != nil {

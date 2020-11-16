@@ -6,7 +6,7 @@ import "hcc/violin-novnc/lib/errors"
 func Init() *errors.HccError {
 	if !Prepare() {
 		errors.SetErrLogger(Logger)
-		return errors.NewHccError(errors.ClarinetInternalInitFail, "logger")
+		return errors.NewHccError(errors.ViolinNoVNCInternalInitFail, "logger")
 	}
 
 	errors.SetErrLogger(Logger)

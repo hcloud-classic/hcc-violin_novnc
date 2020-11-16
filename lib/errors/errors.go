@@ -30,10 +30,11 @@ const (
 	graphql                             // action
 	grpc
 	sql
+	influxDB
 	rabbitmq
 )
 
-var functionList = [...]string{"", "Internal", "Driver", "GraphQL", "Grpc", "SQL", "RabbitMQ"}
+var functionList = [...]string{"", "Internal", "Driver", "GraphQL", "Grpc", "SQL", "InfluxDB", "RabbitMQ"}
 
 const (
 	// Use Generally
@@ -48,6 +49,7 @@ const (
 	sendError     // send error to client
 	receiveError  // get error as result from server
 	parsingError
+	invalidToken
 	tokenExpired
 	operationFail
 	noResult
@@ -61,6 +63,7 @@ const (
 	executeError
 	tokenGenerationError
 	loginFailed
+	userExist
 
 	// cello specific
 
@@ -72,6 +75,7 @@ const (
 	// viola specific
 
 	// piano specific
+	readMetricError
 
 	// harp specific
 	interfaceAddrLookupError
@@ -107,6 +111,7 @@ var actionList = [...]string{
 	"Send error -> ",
 	"Receive error -> ",
 	"Parsing error -> ",
+	"Invalid Token -> ",
 	"Token Expired -> ",
 	"DB operationfail -> ",
 	"DB no result",
@@ -120,6 +125,7 @@ var actionList = [...]string{
 	"Execute error -> ",
 	"Token Generation Error -> ",
 	"Login failed -> ",
+	"User exist -> ",
 
 	// cello specific
 
@@ -131,6 +137,7 @@ var actionList = [...]string{
 	// viola specific
 
 	// piano specific
+	"Read Metric Error -> ",
 
 	// harp specific
 	"interface address lookup error -> ",

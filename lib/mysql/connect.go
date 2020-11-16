@@ -29,7 +29,5 @@ func Prepare() *errors.HccError {
 		return errors.NewHccError(errors.ViolinNoVNCInternalInitFail, "mysql ping")
 	}
 
-	logger.Logger.Println("db is connected")
-
 	return nil
 }

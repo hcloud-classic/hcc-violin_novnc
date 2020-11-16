@@ -3,10 +3,9 @@ package server
 import (
 	"testing"
 
-	"hcc/violin-novnc/common"
-	"hcc/violin-novnc/encodings"
-	_init "hcc/violin-novnc/init"
 	"hcc/violin-novnc/lib/logger"
+	"hcc/violin-novnc/lib/novnc/common"
+	"hcc/violin-novnc/lib/novnc/encodings"
 )
 
 func newServerConnHandler(cfg *ServerConfig, conn *ServerConn) error {
@@ -15,11 +14,6 @@ func newServerConnHandler(cfg *ServerConfig, conn *ServerConn) error {
 
 func TestServer(t *testing.T) {
 	t.Skip("this isn't an automated test, just an entrypoint for debugging")
-
-	err := _init.LoggerInit()
-	if err != nil {
-		t.Fatal("looger not ready")
-	}
 
 	//chServer := make(chan common.ClientMessage)
 	chClient := make(chan common.ServerMessage)
@@ -36,7 +30,7 @@ func TestServer(t *testing.T) {
 		NewConnHandler:   newServerConnHandler,
 	}
 	url := "http://localhost:8091/"
-	go WsServe(url, cfg)
+	go WsServe(url, cfg, nil)
 	go TcpServe(":5903", cfg)
 	// Process messages coming in on the ClientMessage channel.
 	for {

@@ -171,14 +171,14 @@ func (c *ServerConn) handle() error {
 				logger.Logger.Printf("ServerConn.handle error: %v", err)
 				return err
 			}
-			logger.Logger.Printf("ServerConn.handle: got messagetype, %d", messageType)
+			// logger.Logger.Printf("ServerConn.handle: got messagetype, %d", messageType)
 			msg, ok := clientMessages[messageType]
-			logger.Logger.Printf("ServerConn.handle: found message type, %v", ok)
+			// logger.Logger.Printf("ServerConn.handle: found message type, %v", ok)
 			if !ok {
 				logger.Logger.Printf("ServerConn.handle: unsupported message-type: %v", messageType)
 			}
 			parsedMsg, err := msg.Read(c)
-			logger.Logger.Printf("ServerConn.handle: got parsed messagetype, %v", parsedMsg)
+			// logger.Logger.Printf("ServerConn.handle: got parsed messagetype, %v", parsedMsg)
 			//update connection for pixel format / color map changes
 			switch parsedMsg.Type() {
 			case common.SetPixelFormatMsgType:
