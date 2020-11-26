@@ -4,7 +4,6 @@ import (
 	"sync"
 
 	"hcc/violin-novnc/action/grpc/client"
-	"hcc/violin-novnc/dao"
 	"hcc/violin-novnc/lib/errors"
 	"hcc/violin-novnc/lib/logger"
 	vncproxy "hcc/violin-novnc/lib/novnc/proxy"
@@ -28,13 +27,6 @@ var VNCD = VNCDriver{
 	addMutex:            sync.Mutex{},
 	vncPort:             "5901",
 	vncPasswd:           "qwe1212",
-}
-
-func (vncd *VNCDriver) Prepare() {
-	err := dao.InitVNCServer()
-	if err != nil {
-		logger.Logger.Fatalf(err.Error())
-	}
 }
 
 func (vncd *VNCDriver) Create(srvUUID string) (string, *errors.HccErrorStack) {
@@ -93,14 +85,6 @@ func (vncd *VNCDriver) Create(srvUUID string) (string, *errors.HccErrorStack) {
 		args["target_port"] = vncd.vncPort
 		args["websocket_port"] = port
 
-		_, err := dao.CreateVNC(args)
-		if err != nil {
-			logger.Logger.Println(err.Error())
-			es.Push(err)
-			vncd.addMutex.Unlock()
-			return "", es
-		}
-
 		vncd.serverConnectionMap.Store(srvUUID, 1)
 		vncd.addMutex.Unlock()
 
@@ -143,9 +127,6 @@ func (vncd *VNCDriver) Delete(srvUUID string) *errors.HccErrorStack {
 			if proxy, b := vncd.serverProxyMap.Load(srvUUID); b {
 				logger.Logger.Println(srvUUID, " Proxy will close")
 				proxy.(*vncproxy.VncProxy).Shutdown()
-				if err := dao.DeleteVNC(srvUUID); err != nil {
-					es = errors.NewHccErrorStack(err)
-				}
 			}
 		}
 	}

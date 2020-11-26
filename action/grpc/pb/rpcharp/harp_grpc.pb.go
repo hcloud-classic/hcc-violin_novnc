@@ -23,6 +23,7 @@ type HarpClient interface {
 	GetSubnet(ctx context.Context, in *ReqGetSubnet, opts ...grpc.CallOption) (*ResGetSubnet, error)
 	GetSubnetByServer(ctx context.Context, in *ReqGetSubnetByServer, opts ...grpc.CallOption) (*ResGetSubnetByServer, error)
 	GetSubnetList(ctx context.Context, in *ReqGetSubnetList, opts ...grpc.CallOption) (*ResGetSubnetList, error)
+	GetAvailableSubnetList(ctx context.Context, in *rpcmsgType.Empty, opts ...grpc.CallOption) (*ResGetAvailableSubnetList, error)
 	GetSubnetNum(ctx context.Context, in *rpcmsgType.Empty, opts ...grpc.CallOption) (*ResGetSubnetNum, error)
 	UpdateSubnet(ctx context.Context, in *ReqUpdateSubnet, opts ...grpc.CallOption) (*ResUpdateSubnet, error)
 	DeleteSubnet(ctx context.Context, in *ReqDeleteSubnet, opts ...grpc.CallOption) (*ResDeleteSubnet, error)
@@ -36,8 +37,8 @@ type HarpClient interface {
 	GetAdaptiveIPServerNum(ctx context.Context, in *rpcmsgType.Empty, opts ...grpc.CallOption) (*ResGetAdaptiveIPServerNum, error)
 	DeleteAdaptiveIPServer(ctx context.Context, in *ReqDeleteAdaptiveIPServer, opts ...grpc.CallOption) (*ResDeleteAdaptiveIPServer, error)
 	// DHCPD
-	CreateDHPCDConf(ctx context.Context, in *ReqCreateDHPCDConf, opts ...grpc.CallOption) (*ResCreateDHPCDConf, error)
-	DeleteDHPCDConf(ctx context.Context, in *ReqDeleteDHPCDConf, opts ...grpc.CallOption) (*ResDeleteDHPCDConf, error)
+	CreateDHCPDConf(ctx context.Context, in *ReqCreateDHCPDConf, opts ...grpc.CallOption) (*ResCreateDHCPDConf, error)
+	DeleteDHCPDConf(ctx context.Context, in *ReqDeleteDHCPDConf, opts ...grpc.CallOption) (*ResDeleteDHCPDConf, error)
 }
 
 type harpClient struct {
@@ -78,6 +79,15 @@ func (c *harpClient) GetSubnetByServer(ctx context.Context, in *ReqGetSubnetBySe
 func (c *harpClient) GetSubnetList(ctx context.Context, in *ReqGetSubnetList, opts ...grpc.CallOption) (*ResGetSubnetList, error) {
 	out := new(ResGetSubnetList)
 	err := c.cc.Invoke(ctx, "/RpcHarp.Harp/GetSubnetList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *harpClient) GetAvailableSubnetList(ctx context.Context, in *rpcmsgType.Empty, opts ...grpc.CallOption) (*ResGetAvailableSubnetList, error) {
+	out := new(ResGetAvailableSubnetList)
+	err := c.cc.Invoke(ctx, "/RpcHarp.Harp/GetAvailableSubnetList", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -183,18 +193,18 @@ func (c *harpClient) DeleteAdaptiveIPServer(ctx context.Context, in *ReqDeleteAd
 	return out, nil
 }
 
-func (c *harpClient) CreateDHPCDConf(ctx context.Context, in *ReqCreateDHPCDConf, opts ...grpc.CallOption) (*ResCreateDHPCDConf, error) {
-	out := new(ResCreateDHPCDConf)
-	err := c.cc.Invoke(ctx, "/RpcHarp.Harp/CreateDHPCDConf", in, out, opts...)
+func (c *harpClient) CreateDHCPDConf(ctx context.Context, in *ReqCreateDHCPDConf, opts ...grpc.CallOption) (*ResCreateDHCPDConf, error) {
+	out := new(ResCreateDHCPDConf)
+	err := c.cc.Invoke(ctx, "/RpcHarp.Harp/CreateDHCPDConf", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *harpClient) DeleteDHPCDConf(ctx context.Context, in *ReqDeleteDHPCDConf, opts ...grpc.CallOption) (*ResDeleteDHPCDConf, error) {
-	out := new(ResDeleteDHPCDConf)
-	err := c.cc.Invoke(ctx, "/RpcHarp.Harp/DeleteDHPCDConf", in, out, opts...)
+func (c *harpClient) DeleteDHCPDConf(ctx context.Context, in *ReqDeleteDHCPDConf, opts ...grpc.CallOption) (*ResDeleteDHCPDConf, error) {
+	out := new(ResDeleteDHCPDConf)
+	err := c.cc.Invoke(ctx, "/RpcHarp.Harp/DeleteDHCPDConf", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -210,6 +220,7 @@ type HarpServer interface {
 	GetSubnet(context.Context, *ReqGetSubnet) (*ResGetSubnet, error)
 	GetSubnetByServer(context.Context, *ReqGetSubnetByServer) (*ResGetSubnetByServer, error)
 	GetSubnetList(context.Context, *ReqGetSubnetList) (*ResGetSubnetList, error)
+	GetAvailableSubnetList(context.Context, *rpcmsgType.Empty) (*ResGetAvailableSubnetList, error)
 	GetSubnetNum(context.Context, *rpcmsgType.Empty) (*ResGetSubnetNum, error)
 	UpdateSubnet(context.Context, *ReqUpdateSubnet) (*ResUpdateSubnet, error)
 	DeleteSubnet(context.Context, *ReqDeleteSubnet) (*ResDeleteSubnet, error)
@@ -223,8 +234,8 @@ type HarpServer interface {
 	GetAdaptiveIPServerNum(context.Context, *rpcmsgType.Empty) (*ResGetAdaptiveIPServerNum, error)
 	DeleteAdaptiveIPServer(context.Context, *ReqDeleteAdaptiveIPServer) (*ResDeleteAdaptiveIPServer, error)
 	// DHCPD
-	CreateDHPCDConf(context.Context, *ReqCreateDHPCDConf) (*ResCreateDHPCDConf, error)
-	DeleteDHPCDConf(context.Context, *ReqDeleteDHPCDConf) (*ResDeleteDHPCDConf, error)
+	CreateDHCPDConf(context.Context, *ReqCreateDHCPDConf) (*ResCreateDHCPDConf, error)
+	DeleteDHCPDConf(context.Context, *ReqDeleteDHCPDConf) (*ResDeleteDHCPDConf, error)
 	mustEmbedUnimplementedHarpServer()
 }
 
@@ -243,6 +254,9 @@ func (*UnimplementedHarpServer) GetSubnetByServer(context.Context, *ReqGetSubnet
 }
 func (*UnimplementedHarpServer) GetSubnetList(context.Context, *ReqGetSubnetList) (*ResGetSubnetList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSubnetList not implemented")
+}
+func (*UnimplementedHarpServer) GetAvailableSubnetList(context.Context, *rpcmsgType.Empty) (*ResGetAvailableSubnetList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAvailableSubnetList not implemented")
 }
 func (*UnimplementedHarpServer) GetSubnetNum(context.Context, *rpcmsgType.Empty) (*ResGetSubnetNum, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSubnetNum not implemented")
@@ -277,11 +291,11 @@ func (*UnimplementedHarpServer) GetAdaptiveIPServerNum(context.Context, *rpcmsgT
 func (*UnimplementedHarpServer) DeleteAdaptiveIPServer(context.Context, *ReqDeleteAdaptiveIPServer) (*ResDeleteAdaptiveIPServer, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAdaptiveIPServer not implemented")
 }
-func (*UnimplementedHarpServer) CreateDHPCDConf(context.Context, *ReqCreateDHPCDConf) (*ResCreateDHPCDConf, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateDHPCDConf not implemented")
+func (*UnimplementedHarpServer) CreateDHCPDConf(context.Context, *ReqCreateDHCPDConf) (*ResCreateDHCPDConf, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateDHCPDConf not implemented")
 }
-func (*UnimplementedHarpServer) DeleteDHPCDConf(context.Context, *ReqDeleteDHPCDConf) (*ResDeleteDHPCDConf, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteDHPCDConf not implemented")
+func (*UnimplementedHarpServer) DeleteDHCPDConf(context.Context, *ReqDeleteDHCPDConf) (*ResDeleteDHCPDConf, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteDHCPDConf not implemented")
 }
 func (*UnimplementedHarpServer) mustEmbedUnimplementedHarpServer() {}
 
@@ -357,6 +371,24 @@ func _Harp_GetSubnetList_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(HarpServer).GetSubnetList(ctx, req.(*ReqGetSubnetList))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Harp_GetAvailableSubnetList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(rpcmsgType.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HarpServer).GetAvailableSubnetList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/RpcHarp.Harp/GetAvailableSubnetList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HarpServer).GetAvailableSubnetList(ctx, req.(*rpcmsgType.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -559,38 +591,38 @@ func _Harp_DeleteAdaptiveIPServer_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Harp_CreateDHPCDConf_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReqCreateDHPCDConf)
+func _Harp_CreateDHCPDConf_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReqCreateDHCPDConf)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(HarpServer).CreateDHPCDConf(ctx, in)
+		return srv.(HarpServer).CreateDHCPDConf(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/RpcHarp.Harp/CreateDHPCDConf",
+		FullMethod: "/RpcHarp.Harp/CreateDHCPDConf",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(HarpServer).CreateDHPCDConf(ctx, req.(*ReqCreateDHPCDConf))
+		return srv.(HarpServer).CreateDHCPDConf(ctx, req.(*ReqCreateDHCPDConf))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Harp_DeleteDHPCDConf_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReqDeleteDHPCDConf)
+func _Harp_DeleteDHCPDConf_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReqDeleteDHCPDConf)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(HarpServer).DeleteDHPCDConf(ctx, in)
+		return srv.(HarpServer).DeleteDHCPDConf(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/RpcHarp.Harp/DeleteDHPCDConf",
+		FullMethod: "/RpcHarp.Harp/DeleteDHCPDConf",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(HarpServer).DeleteDHPCDConf(ctx, req.(*ReqDeleteDHPCDConf))
+		return srv.(HarpServer).DeleteDHCPDConf(ctx, req.(*ReqDeleteDHCPDConf))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -614,6 +646,10 @@ var _Harp_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetSubnetList",
 			Handler:    _Harp_GetSubnetList_Handler,
+		},
+		{
+			MethodName: "GetAvailableSubnetList",
+			Handler:    _Harp_GetAvailableSubnetList_Handler,
 		},
 		{
 			MethodName: "GetSubnetNum",
@@ -660,12 +696,12 @@ var _Harp_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Harp_DeleteAdaptiveIPServer_Handler,
 		},
 		{
-			MethodName: "CreateDHPCDConf",
-			Handler:    _Harp_CreateDHPCDConf_Handler,
+			MethodName: "CreateDHCPDConf",
+			Handler:    _Harp_CreateDHCPDConf_Handler,
 		},
 		{
-			MethodName: "DeleteDHPCDConf",
-			Handler:    _Harp_DeleteDHPCDConf_Handler,
+			MethodName: "DeleteDHCPDConf",
+			Handler:    _Harp_DeleteDHCPDConf_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
