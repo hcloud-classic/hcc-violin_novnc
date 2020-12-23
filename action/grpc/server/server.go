@@ -5,6 +5,7 @@ import (
 	"net"
 	"strconv"
 
+	errors "github.com/hcloud-classic/hcc_errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"hcc/violin-novnc/action/grpc/errconv"
@@ -12,7 +13,6 @@ import (
 
 	"hcc/violin-novnc/driver"
 	"hcc/violin-novnc/lib/config"
-	"hcc/violin-novnc/lib/errors"
 	"hcc/violin-novnc/lib/logger"
 )
 

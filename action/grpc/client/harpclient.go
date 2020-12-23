@@ -7,12 +7,12 @@ import (
 	"sync"
 	"time"
 
+	errors "github.com/hcloud-classic/hcc_errors"
 	"google.golang.org/grpc"
 
 	"hcc/violin-novnc/action/grpc/errconv"
 	"hcc/violin-novnc/action/grpc/pb/rpcharp"
 	"hcc/violin-novnc/lib/config"
-	"hcc/violin-novnc/lib/errors"
 	"hcc/violin-novnc/lib/logger"
 )
 

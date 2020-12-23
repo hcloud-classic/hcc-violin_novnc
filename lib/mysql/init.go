@@ -1,7 +1,7 @@
 package mysql
 
 import (
-	"hcc/violin-novnc/lib/errors"
+	errors "github.com/hcloud-classic/hcc_errors"
 )
 
 func Init() *errors.HccError {

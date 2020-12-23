@@ -1,6 +1,6 @@
 package model
 
-import "hcc/violin-novnc/lib/errors"
+import errors "github.com/hcloud-classic/hcc_errors"
 
 // Vnc : Model strucy of vnc
 type Vnc struct {

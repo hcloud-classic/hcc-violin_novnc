@@ -50,6 +50,7 @@ goreport: goreport_dep ## Make goreport
 	@./hcloud-badge/hcloud_badge.sh $(PROJECT_NAME)
 
 build: ## Build the binary file
+	@$(GOROOT)/bin/go get -u=patch github.com/hcloud-classic/hcc_errors
 	@$(GOROOT)/bin/go build -o $(BINARY_NAME) main.go
 
 pb:

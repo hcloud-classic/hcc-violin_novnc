@@ -1,8 +1,8 @@
 package errconv
 
 import (
+	errh "github.com/hcloud-classic/hcc_errors"
 	errg "hcc/violin-novnc/action/grpc/pb/rpcmsgType"
-	errh "hcc/violin-novnc/lib/errors"
 )
 
 func GrpcToHcc(eg *errg.HccError) *errh.HccError {
@@ -10,7 +10,7 @@ func GrpcToHcc(eg *errg.HccError) *errh.HccError {
 }
 
 func HccToGrpc(eh *errh.HccError) *errg.HccError {
-	return &errg.HccError{ErrCode: eh.ErrCode, ErrText: eh.ErrText}
+	return &errg.HccError{ErrCode: eh.Code(), ErrText: eh.Text()}
 }
 
 func GrpcStackToHcc(esg *[]*errg.HccError) *errh.HccErrorStack {
@@ -28,7 +28,7 @@ func GrpcStackToHcc(esg *[]*errg.HccError) *errh.HccErrorStack {
 func HccStackToGrpc(esh *errh.HccErrorStack) []*errg.HccError {
 	ges := []*errg.HccError{}
 	for i := 0; i <= esh.Len(); i++ {
-		ge := &errg.HccError{ErrCode: (*esh)[i].ErrCode, ErrText: (*esh)[i].ErrText}
+		ge := &errg.HccError{ErrCode: (*esh)[i].Code(), ErrText: (*esh)[i].Text()}
 		ges = append(ges, ge)
 	}
 	return ges

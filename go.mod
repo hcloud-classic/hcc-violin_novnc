@@ -9,6 +9,7 @@ require (
 	github.com/golang/protobuf v1.4.1
 	github.com/graphql-go/graphql v0.7.8 // indirect
 	github.com/graphql-go/handler v0.2.3 // indirect
+	github.com/hcloud-classic/hcc_errors v1.0.2
 	golang.org/x/net v0.0.0-20191119073136-fc4aabc6c914
 	google.golang.org/appengine v1.6.5 // indirect
 	google.golang.org/grpc v1.31.0

@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"hcc/violin-novnc/lib/errors"
+	errors "github.com/hcloud-classic/hcc_errors"
 	"hcc/violin-novnc/lib/logger"
 	"hcc/violin-novnc/lib/mysql"
 	"hcc/violin-novnc/model"

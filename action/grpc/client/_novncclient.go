@@ -5,11 +5,11 @@ import (
 	"strconv"
 	"time"
 
+	errors "github.com/hcloud-classic/hcc_errors"
 	"google.golang.org/grpc"
 
 	rpcnovnc "hcc/violin-novnc/action/grpc/pb/rpcviolin_novnc"
 	"hcc/violin-novnc/lib/config"
-	"hcc/violin-novnc/lib/errors"
 	"hcc/violin-novnc/lib/logger"
 )
 

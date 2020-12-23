@@ -3,8 +3,9 @@ package driver
 import (
 	"sync"
 
+	errors "github.com/hcloud-classic/hcc_errors"
+
 	"hcc/violin-novnc/action/grpc/client"
-	"hcc/violin-novnc/lib/errors"
 	"hcc/violin-novnc/lib/logger"
 	vncproxy "hcc/violin-novnc/lib/novnc/proxy"
 )
