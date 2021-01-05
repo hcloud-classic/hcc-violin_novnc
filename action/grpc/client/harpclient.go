@@ -8,10 +8,11 @@ import (
 	"time"
 
 	errors "github.com/hcloud-classic/hcc_errors"
+	rpcharp "github.com/hcloud-classic/pb"
 	"google.golang.org/grpc"
 
 	"hcc/violin-novnc/action/grpc/errconv"
-	"hcc/violin-novnc/action/grpc/pb/rpcharp"
+
 	"hcc/violin-novnc/lib/config"
 	"hcc/violin-novnc/lib/logger"
 )
@@ -54,7 +55,7 @@ func (rc *RpcClient) GetServerIP(srvUUID string) (string, *errors.HccErrorStack)
 		srvIP = strings.TrimRight(subnet.GetNetworkIP(), "0") + "1"
 	}
 	if es := res.GetHccErrorStack(); es != nil {
-		errStack = errconv.GrpcStackToHcc(&es)
+		errStack = errconv.GrpcStackToHcc(es)
 	}
 	return srvIP, errStack
 }

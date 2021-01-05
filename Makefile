@@ -50,16 +50,10 @@ goreport: goreport_dep ## Make goreport
 	@./hcloud-badge/hcloud_badge.sh $(PROJECT_NAME)
 
 build: ## Build the binary file
-	@$(GOROOT)/bin/go get -u=patch github.com/hcloud-classic/hcc_errors
 	@$(GOROOT)/bin/go build -o $(BINARY_NAME) main.go
 
-pb:
-	@rm -rf ./tmp_${PROTO_PROJECT_NAME}
-	@cp -r $(GOPATH)/src/${ROOT_PROJECT_NAME}/${PROTO_PROJECT_NAME} ./tmp_${PROTO_PROJECT_NAME}
-	@./tmp_${PROTO_PROJECT_NAME}/${PACKAGING_SCRIPT_FILE} $(PROJECT_NAME)
-	@protoc -I $(GOPATH)/src/${ROOT_PROJECT_NAME}/${PROJECT_NAME}/tmp_${PROTO_PROJECT_NAME} --go_out=$(GOPATH)/src --go-grpc_out=$(GOPATH)/src $(GOPATH)/src/${ROOT_PROJECT_NAME}/${PROJECT_NAME}/tmp_${PROTO_PROJECT_NAME}/*.proto       
-	@rm -rf ./tmp_${PROTO_PROJECT_NAME}
-
+pb: ## Genernate gRPC protobuf source files
+	@protoc -I $(GOPATH)/src/${ROOT_PROJECT_NAME}/${PROTO_PROJECT_NAME}/ --go_out=${GOPATH}/src --go-grpc_out=${GOPATH}/src $(GOPATH)/src/${ROOT_PROJECT_NAME}/${PROTO_PROJECT_NAME}/*.proto
 
 clean: ## Remove previous build
 	@rm -f $(BINARY_NAME)

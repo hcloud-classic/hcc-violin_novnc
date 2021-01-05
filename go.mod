@@ -4,14 +4,11 @@ go 1.13
 
 require (
 	github.com/Terry-Mao/goconf v0.0.0-20161115082538-13cb73d70c44
-	github.com/amitbet/vncproxy v0.0.0-20190616173805-f07be04814cb // indirect
-	github.com/go-sql-driver/mysql v1.4.1
-	github.com/golang/protobuf v1.4.1
-	github.com/graphql-go/graphql v0.7.8 // indirect
-	github.com/graphql-go/handler v0.2.3 // indirect
-	github.com/hcloud-classic/hcc_errors v1.0.2
-	golang.org/x/net v0.0.0-20191119073136-fc4aabc6c914
-	google.golang.org/appengine v1.6.5 // indirect
-	google.golang.org/grpc v1.31.0
-	google.golang.org/protobuf v1.25.0
+	github.com/go-sql-driver/mysql v1.5.0
+	github.com/hcloud-classic/hcc_errors v1.1.0
+	github.com/hcloud-classic/pb v0.0.0
+	golang.org/x/net v0.0.0-20201224014010-6772e930b67b
+	google.golang.org/grpc v1.34.0
 )
+
+replace github.com/hcloud-classic/pb => ../pb

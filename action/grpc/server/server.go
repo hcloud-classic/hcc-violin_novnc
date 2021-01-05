@@ -6,11 +6,11 @@ import (
 	"strconv"
 
 	errors "github.com/hcloud-classic/hcc_errors"
+	rpcnovnc "github.com/hcloud-classic/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"hcc/violin-novnc/action/grpc/errconv"
-	rpcnovnc "hcc/violin-novnc/action/grpc/pb/rpcviolin_novnc"
 
+	"hcc/violin-novnc/action/grpc/errconv"
 	"hcc/violin-novnc/driver"
 	"hcc/violin-novnc/lib/config"
 	"hcc/violin-novnc/lib/logger"
