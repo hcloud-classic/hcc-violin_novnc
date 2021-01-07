@@ -1,6 +1,6 @@
 package model
 
-import "github.com/hcloud-classic/hcc_errors"
+import errors "github.com/hcloud-classic/hcc_errors"
 
 // Vnc : Model strucy of vnc
 type Vnc struct {
