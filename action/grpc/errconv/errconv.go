@@ -35,7 +35,7 @@ func HccStackToGrpc(esh *errh.HccErrorStack) *errg.HccErrorStack {
 	ges.Version = esh.Version()
 	ges.IsMixed = esh.IsMixed
 
-	for i := 0; i <= esh.Len(); i++ {
+	for i := 0; i < esh.Len(); i++ {
 		eh := esh.Pop()
 		ge := HccToGrpc(eh)
 		ges.ErrStack = append(ges.GetErrStack(), ge)
