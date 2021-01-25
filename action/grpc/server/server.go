@@ -65,12 +65,12 @@ func (s *server) ControlVNC(ctx context.Context, in *rpcnovnc.ReqControlVNC) (*r
 
 func InitGRPCServer() {
 
-	lis, err := net.Listen("tcp", ":"+strconv.FormatInt(config.HTTP.Port, 10))
+	lis, err := net.Listen("tcp", ":"+strconv.FormatInt(config.Grpc.Port, 10))
 	if err != nil {
 		logger.Logger.Fatalf("failed to listen: %v", err)
 	}
 	defer lis.Close()
-	logger.Logger.Println("Opening server on port " + strconv.FormatInt(config.HTTP.Port, 10) + "...")
+	logger.Logger.Println("Opening server on port " + strconv.FormatInt(config.Grpc.Port, 10) + "...")
 
 	srv = grpc.NewServer()
 	rpcnovnc.RegisterNovncServer(srv, &server{})

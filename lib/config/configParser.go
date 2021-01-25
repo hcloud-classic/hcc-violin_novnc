@@ -42,16 +42,16 @@ func parseMysql() {
 	}
 }
 
-func parseHTTP() {
-	config.HTTPConfig = conf.Get("http")
-	if config.HTTPConfig == nil {
-		errors.NewHccError(errors.ViolinNoVNCInternalParsingError, "http config").Fatal()
+func parseGrpc() {
+	config.GrpcConfig = conf.Get("grpc")
+	if config.GrpcConfig == nil {
+		errors.NewHccError(errors.ViolinNoVNCInternalParsingError, "grpc config").Fatal()
 	}
 
-	HTTP = http{}
-	HTTP.Port, err = config.HTTPConfig.Int("port")
+	Grpc = grpc{}
+	Grpc.Port, err = config.GrpcConfig.Int("port")
 	if err != nil {
-		errors.NewHccError(errors.ViolinNoVNCInternalParsingError, "http port").Fatal()
+		errors.NewHccError(errors.ViolinNoVNCInternalParsingError, "grpc port").Fatal()
 	}
 
 }
@@ -84,6 +84,6 @@ func Parser() {
 	}
 
 	parseMysql()
-	parseHTTP()
+	parseGrpc()
 	parseHarp()
 }
