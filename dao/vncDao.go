@@ -24,7 +24,7 @@ func CreateVNC(args map[string]interface{}) (model.Vnc, *errors.HccError) {
 	stmt, err := mysql.Db.Prepare(sql)
 
 	if err != nil {
-		return serverVnc, errors.NewHccError(errors.ViolinNoVNCInternalDBOperationFail, "sql Prepare : "+err.Error())
+		return serverVnc, errors.NewHccError(errors.ViolinNoVNCInternalOperationFail, "sql Prepare : "+err.Error())
 	}
 	defer func() {
 		_ = stmt.Close()
@@ -33,7 +33,7 @@ func CreateVNC(args map[string]interface{}) (model.Vnc, *errors.HccError) {
 	result, err := stmt.Exec(serverVnc.ServerUUID, serverVnc.TargetIP, serverVnc.TargetPort, serverVnc.WebSocket, serverVnc.TargetPass, serverVnc.TargetIP, serverVnc.TargetPort, serverVnc.WebSocket)
 
 	if err != nil {
-		return serverVnc, errors.NewHccError(errors.ViolinNoVNCInternalDBOperationFail, "stmt Exec : "+err.Error())
+		return serverVnc, errors.NewHccError(errors.ViolinNoVNCInternalOperationFail, "stmt Exec : "+err.Error())
 	}
 
 	serverVnc.Info = "Created"
@@ -47,7 +47,7 @@ func DeleteVNC(srvUUID string) *errors.HccError {
 	stmt, err := mysql.Db.Query(sql)
 	if err != nil {
 		logger.Logger.Println(err.Error())
-		return errors.NewHccError(errors.ViolinNoVNCInternalDBOperationFail, "sql Query : "+err.Error())
+		return errors.NewHccError(errors.ViolinNoVNCInternalOperationFail, "sql Query : "+err.Error())
 	}
 	defer func() {
 		_ = stmt.Close()
@@ -62,7 +62,7 @@ func GetVNCServerList() ([]string, *errors.HccError) {
 
 	stmt, err := mysql.Db.Query(sql)
 	if err != nil {
-		return nil, errors.NewHccError(errors.ViolinNoVNCInternalDBOperationFail, "sql Query : "+err.Error())
+		return nil, errors.NewHccError(errors.ViolinNoVNCInternalOperationFail, "sql Query : "+err.Error())
 	}
 	defer func() {
 		_ = stmt.Close()
@@ -72,7 +72,7 @@ func GetVNCServerList() ([]string, *errors.HccError) {
 		var uuid string
 		err := stmt.Scan(&uuid)
 		if err != nil {
-			return nil, errors.NewHccError(errors.ViolinNoVNCInternalDBOperationFail, err.Error())
+			return nil, errors.NewHccError(errors.ViolinNoVNCInternalOperationFail, err.Error())
 		}
 		srvUUIDList = append(srvUUIDList, uuid)
 	}
@@ -84,7 +84,7 @@ func InitVNCServer() *errors.HccError {
 
 	stmt, err := mysql.Db.Query(sql)
 	if err != nil {
-		return errors.NewHccError(errors.ViolinNoVNCInternalDBOperationFail, "sql Query : "+err.Error())
+		return errors.NewHccError(errors.ViolinNoVNCInternalOperationFail, "sql Query : "+err.Error())
 	}
 	defer func() {
 		_ = stmt.Close()
