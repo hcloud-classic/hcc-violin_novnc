@@ -1,17 +1,22 @@
-PROJECT_NAME := "GraphQL_violin_novnc"
-PKG_LIST := $(shell go list ${PROJECT_NAME}/...)
+ROOT_PROJECT_NAME := "hcc"
+PROJECT_NAME := "violin-novnc"
+BINARY_NAME := "violin_novnc"
+PKG_LIST := $(shell go list ${ROOT_PROJECT_NAME}/${PROJECT_NAME}/...)
 
-.PHONY: all dep build docker clean gofmt goreport goreport_deb test coverage coverhtml lint
+PROTO_PROJECT_NAME := "melody"
+PACKAGING_SCRIPT_FILE := "packaging.sh"
 
-all: dep build
+.PHONY: all build clean gofmt goreport goreport_deb test coverage coverhtml lint
+
+all: build
 
 copy_dir: ## Copy project folder to GOPATH
-	@rm -rf $(GOPATH)/src/${PROJECT_NAME}
-	@cp -Rp `pwd` $(GOPATH)/src/${PROJECT_NAME}
+	@mkdir -p $(GOPATH)/src/${ROOT_PROJECT_NAME}
+	@rm -rf $(GOPATH)/src/${ROOT_PROJECT_NAME}/${PROJECT_NAME}
+	@cp -Rp `pwd` $(GOPATH)/src/${ROOT_PROJECT_NAME}/${PROJECT_NAME}
 
 lint_dep: ## Get the dependencies for golint
 	@$(GOROOT)/bin/go get -u golang.org/x/lint/golint
-	@$(GOROOT)/bin/go install golang.org/x/lint/golint
 
 lint: ## Lint the files
 	@$(GOPATH)/bin/golint -set_exit_status ${PKG_LIST}
@@ -29,43 +34,31 @@ coverage: ## Generate global code coverage report
 coverhtml: coverage ## Generate global code coverage report in HTML
 	@$(GOROOT)/bin/go tool cover -html=coverage.out
 
-dep: ## Get the dependencies for build
-	@$(GOROOT)/bin/go get -u github.com/nu7hatch/gouuid
-	@$(GOROOT)/bin/go get -u github.com/go-sql-driver/mysql
-	@$(GOROOT)/bin/go get -u github.com/graphql-go/graphql
-	@$(GOROOT)/bin/go get -u github.com/graphql-go/handler
-
 gofmt: ## Run gofmt for go files
 	@find -name '*.go' -exec $(GOROOT)/bin/gofmt -s -w {} \;
 
 goreport_dep: ## Get the dependencies for goreport
+	@make lint_dep
 	@$(GOROOT)/bin/go get -u github.com/gojp/goreportcard/cmd/goreportcard-cli
-	@$(GOROOT)/bin/go install github.com/gojp/goreportcard/cmd/goreportcard-cli
-	@$(GOROOT)/bin/go get -u github.com/alecthomas/gometalinter
-	@$(GOROOT)/bin/go install github.com/alecthomas/gometalinter
-	@$(GOROOT)/bin/go get -u github.com/fzipp/gocyclo
-	@$(GOROOT)/bin/go install github.com/fzipp/gocyclo
-	@$(GOROOT)/bin/go get -u github.com/gordonklaus/ineffassign
-	@$(GOROOT)/bin/go install github.com/gordonklaus/ineffassign
-	@$(GOROOT)/bin/go get -u github.com/client9/misspell/cmd/misspell
-	@$(GOROOT)/bin/go install github.com/client9/misspell/cmd/misspell
 
 goreport: goreport_dep ## Make goreport
 	@git submodule sync --recursive
 	@git submodule update --init --recursive
-	@./graphql_violin_novnc_badge/update_goreport_grade.sh
+	@git --git-dir=$(PWD)/hcloud-badge/.git fetch --all
+	@git --git-dir=$(PWD)/hcloud-badge/.git checkout feature/dev
+	@git --git-dir=$(PWD)/hcloud-badge/.git pull origin feature/dev
+	@./hcloud-badge/hcloud_badge.sh $(PROJECT_NAME)
 
 build: ## Build the binary file
-	@$(GOROOT)/bin/go build -o $(PROJECT_NAME) main.go
+	@$(GOROOT)/bin/go get -u=patch --insecure github.com/hcloud-classic/hcc_errors@v1.1
+	@$(GOROOT)/bin/go mod vendor
+	@$(GOROOT)/bin/go build -o $(BINARY_NAME) main.go
 
-docker: ## Build docker image and push it to private docker registry
-	@sudo docker build -t graphql_violin_novnc .
-	@sudo docker tag graphql_violin_novnc:latest 192.168.110.230:5000/graphql_violin_novnc:latest
-	@sudo docker push 192.168.110.230:5000/graphql_violin_novnc:latest
+pb: ## Genernate gRPC protobuf source files
+	@protoc -I $(GOPATH)/src/${ROOT_PROJECT_NAME}/${PROTO_PROJECT_NAME}/ --go_out=${GOPATH}/src --go-grpc_out=${GOPATH}/src $(GOPATH)/src/${ROOT_PROJECT_NAME}/${PROTO_PROJECT_NAME}/*.proto
 
 clean: ## Remove previous build
-	@rm -f $(PROJECT_NAME)
+	@rm -f $(BINARY_NAME)
 
 help: ## Display this help screen
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
-

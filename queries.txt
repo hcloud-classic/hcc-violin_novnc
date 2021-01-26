@@ -1,0 +1,35 @@
+mutation _ {
+  create_vnc(server_uuid: "33a1ef2d-912b-454d-7ff1-50875f5ad8",target_ip:"192.168.110.1", target_port:"5901",target_pass:"qwe1212", websocket_port:"5912",    action:"Create") {
+server_uuid
+target_ip
+target_port
+target_pass
+websocket_port
+    action
+
+  }
+}
+mutation _ {
+  create_vnc(server_uuid: "0d957f42-5ae4-4a92-5749-d617886c9ab",target_ip:"192.168.110.1", target_port:"5901",target_pass:"qwe1212", websocket_port:"5911",action:"Create") {
+server_uuid
+target_ip
+target_port
+target_pass
+websocket_port
+    vnc_info
+    action
+  }
+}
+
+mutation _ {
+  create_vnc(server_uuid: "56a99e72-e9c7-4f77-703f-d76b76033fd1",target_ip:"192.168.110.1", target_port:"5901",target_pass:"qwe1212", websocket_port:"5912",    action:"Create") {
+server_uuid
+target_ip
+target_port
+target_pass
+websocket_port
+
+vnc_info
+        action
+  }
+}

@@ -5,53 +5,55 @@ stages:
     - run
 
 before_script:
-    - export GOROOT="/opt/go"
+    - export GOROOT="/usr/local/go"
     - export GOPATH="/home/gitlab-runner/go"
     - export PATH="$PATH:$GOROOT/bin:$GOPATH/bin"
-    - gmake dep
+    - export GOPROXY=direct
 
 copy_dir:
     stage: init
     script:
-    - gmake copy_dir
+    - make copy_dir
+    - ln -sf $GOPATH/src/hcc/pb ../pb
 
 unit_tests:
   stage: test
   script:
-    - gmake test
+    - make test
 
 race_detector:
   stage: test
   script:
-    - gmake race
+    - make race
 
 code_coverage:
   stage: test
   script:
-    - gmake coverage
-  only:
-  - master
+    - make coverage
+#  only:
+#  - master
 
 go_report:
   stage: test
   script:
-    - gmake goreport
-  only:
-  - master
+    - make goreport
+#  only:
+#  - master
 
-lint_code:
-  stage: test
-  script:
-    - gmake lint_dep
-    - gmake lint
+#lint_code:
+#  stage: test
+#  script:
+#    - make lint_dep
+#    - make lint
 
 build:
   stage: build
   script:
-    - gmake
-    - if pgrep GraphQL_Cello; then killall GraphQL_Cello; fi
-    - nohup sudo $PWD/GraphQL_Cello &
+    - make
+    - sudo /usr/sbin/service violin_novnc stop
+    - sudo cp $PWD/violin_novnc /bin/violin_novnc
+    - sudo chmod 755 /bin/violin_novnc
+    - sudo /usr/sbin/service violin_novnc start
     - echo "Finished"
-  only:
-  - master
-
+#  only:
+#  - master

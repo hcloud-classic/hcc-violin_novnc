@@ -1,7 +1,9 @@
-GraphQL_Cello
+violin_novnc
 coverage.out
 goreport_grade
-
-.idea
-
+.idea/
+.vscode/
+/vendor
+/_venodr-*
 nohup.out
+
