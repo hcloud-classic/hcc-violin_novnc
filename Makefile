@@ -50,12 +50,7 @@ goreport: goreport_dep ## Make goreport
 	@./hcloud-badge/hcloud_badge.sh $(PROJECT_NAME)
 
 build: ## Build the binary file
-	@$(GOROOT)/bin/go get -u=patch --insecure github.com/hcloud-classic/hcc_errors@v1.1
-	@$(GOROOT)/bin/go mod vendor
 	@$(GOROOT)/bin/go build -o $(BINARY_NAME) main.go
-
-pb: ## Genernate gRPC protobuf source files
-	@protoc -I $(GOPATH)/src/${ROOT_PROJECT_NAME}/${PROTO_PROJECT_NAME}/ --go_out=${GOPATH}/src --go-grpc_out=${GOPATH}/src $(GOPATH)/src/${ROOT_PROJECT_NAME}/${PROTO_PROJECT_NAME}/*.proto
 
 clean: ## Remove previous build
 	@rm -f $(BINARY_NAME)

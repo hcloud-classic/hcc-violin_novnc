@@ -3,7 +3,7 @@ package client
 import (
 	"sync"
 
-	rpcharp "github.com/hcloud-classic/pb"
+	rpcharp "innogrid.com/hcloud-classic/pb"
 )
 
 type RpcClient struct {

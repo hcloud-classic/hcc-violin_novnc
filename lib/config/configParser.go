@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/Terry-Mao/goconf"
-	errors "github.com/hcloud-classic/hcc_errors"
+	errors "innogrid.com/hcloud-classic/hcc_errors"
 )
 
 var conf = goconf.New()

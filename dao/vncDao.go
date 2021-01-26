@@ -1,10 +1,11 @@
 package dao
 
 import (
-	errors "github.com/hcloud-classic/hcc_errors"
 	"hcc/violin-novnc/lib/logger"
 	"hcc/violin-novnc/lib/mysql"
 	"hcc/violin-novnc/model"
+
+	errors "innogrid.com/hcloud-classic/hcc_errors"
 )
 
 // CreateVNC : VNC DB createS

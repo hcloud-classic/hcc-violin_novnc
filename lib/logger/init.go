@@ -1,6 +1,6 @@
 package logger
 
-import errors "github.com/hcloud-classic/hcc_errors"
+import errors "innogrid.com/hcloud-classic/hcc_errors"
 
 // Init : Prepare logger
 func Init() *errors.HccError {

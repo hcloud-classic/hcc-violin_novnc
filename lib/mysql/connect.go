@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	_ "github.com/go-sql-driver/mysql" // Needed for connect mysql
-	errors "github.com/hcloud-classic/hcc_errors"
+	errors "innogrid.com/hcloud-classic/hcc_errors"
 
 	"hcc/violin-novnc/lib/config"
 )
