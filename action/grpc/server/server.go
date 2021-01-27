@@ -5,10 +5,10 @@ import (
 	"net"
 	"strconv"
 
-	errors "github.com/hcloud-classic/hcc_errors"
-	rpcnovnc "github.com/hcloud-classic/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	errors "innogrid.com/hcloud-classic/hcc_errors"
+	rpcnovnc "innogrid.com/hcloud-classic/pb"
 
 	"hcc/violin-novnc/action/grpc/errconv"
 	"hcc/violin-novnc/driver"

@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
-	errors "github.com/hcloud-classic/hcc_errors"
-	rpcharp "github.com/hcloud-classic/pb"
 	"google.golang.org/grpc"
+	errors "innogrid.com/hcloud-classic/hcc_errors"
+	rpcharp "innogrid.com/hcloud-classic/pb"
 
 	"hcc/violin-novnc/action/grpc/errconv"
 
