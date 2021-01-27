@@ -51,6 +51,7 @@ build:
 deploy:
   stage: deploy
   script:
+    - make # Binary file is removed at start of new stage. Rebuild.
     - sudo /usr/sbin/service violin_novnc stop
     - sudo cp $PWD/violin_novnc /bin/violin_novnc
     - sudo chmod 755 /bin/violin_novnc
