@@ -2,7 +2,7 @@ stages:
     - init
     - test
     - build
-    - run
+    - deploy
 
 before_script:
     - export GOROOT="/usr/local/go"
@@ -31,15 +31,11 @@ code_coverage:
   stage: test
   script:
     - make coverage
-#  only:
-#  - master
 
 go_report:
   stage: test
   script:
     - make goreport
-#  only:
-#  - master
 
 #lint_code:
 #  stage: test
@@ -51,10 +47,14 @@ build:
   stage: build
   script:
     - make
+
+deploy:
+  stage: deploy
+  script:
     - sudo /usr/sbin/service violin_novnc stop
     - sudo cp $PWD/violin_novnc /bin/violin_novnc
     - sudo chmod 755 /bin/violin_novnc
     - sudo /usr/sbin/service violin_novnc start
     - echo "Finished"
-#  only:
-#  - master
+  only:
+  - master
