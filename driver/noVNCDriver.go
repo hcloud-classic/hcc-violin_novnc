@@ -223,6 +223,7 @@ func (vncd *VNCDriver) Delete(vncInfo *model.Vnc) *errors.HccErrorStack {
 			errors.NewHccError(
 				errors.ViolinNoVNCInternalOperationFail,
 				"Cannot find Server"))
+		return es
 	}
 
 	vncInfo.WebSocket = ws.(string)
@@ -247,7 +248,7 @@ func (vncd *VNCDriver) Delete(vncInfo *model.Vnc) *errors.HccErrorStack {
 		logger.Logger.Println("Proxy user count decrease failed\n", err.Error())
 	}
 
-	return es
+	return nil
 }
 
 func (vncd *VNCDriver) Recover(vncInfo *model.Vnc) *errors.HccErrorStack {
