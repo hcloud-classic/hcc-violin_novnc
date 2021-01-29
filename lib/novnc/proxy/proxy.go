@@ -170,7 +170,7 @@ func (vp *VncProxy) StartListening() error {
 	if vp.ProxyVncPassword != "" {
 		secHandlers = []server.SecurityHandler{&server.ServerAuthVNC{vp.ProxyVncPassword}}
 	}
-	qwe := &server.ServerConfig{
+	cfg := &server.ServerConfig{
 		SecurityHandlers: secHandlers,
 		Encodings:        []common.IEncoding{&encodings.RawEncoding{}, &encodings.TightEncoding{}, &encodings.CopyRectEncoding{}},
 		PixelFormat:      common.NewPixelFormat(32),
@@ -181,7 +181,6 @@ func (vp *VncProxy) StartListening() error {
 		NewConnHandler:   vp.newServerConnHandler,
 		UseDummySession:  !vp.UsingSessions,
 	}
-	cfg := qwe
 
 	if vp.WsListeningURL != "" {
 		logger.Logger.Printf("running ws listener url: %s", vp.WsListeningURL)

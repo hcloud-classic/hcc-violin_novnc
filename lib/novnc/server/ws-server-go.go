@@ -2,12 +2,13 @@ package server
 
 import (
 	"context"
-	"hcc/violin-novnc/lib/logger"
 	"io"
 	"net/http"
 	"net/url"
 
 	"golang.org/x/net/websocket"
+
+	"hcc/violin-novnc/lib/logger"
 )
 
 type WsServer struct {
@@ -44,6 +45,7 @@ func (wsServer *WsServer) Listen(urlStr string, handlerFunc WsHandler) {
 
 	// err = http.ListenAndServe(url.Host, nil)
 	wsServer.proxyServer = &http.Server{Addr: url.Host, Handler: wsServer.mux}
+	logger.Logger.Println("Server start")
 	err = wsServer.proxyServer.ListenAndServe()
 	if err != nil {
 		logger.Logger.Println("ListenAndServe: " + err.Error())

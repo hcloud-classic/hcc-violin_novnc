@@ -14,6 +14,7 @@ import (
 	"hcc/violin-novnc/driver"
 	"hcc/violin-novnc/lib/config"
 	"hcc/violin-novnc/lib/logger"
+	"hcc/violin-novnc/model"
 )
 
 type server struct {
@@ -30,35 +31,40 @@ func (s *server) CreateVNC(ctx context.Context, in *rpcnovnc.ReqNoVNC) (*rpcnovn
 */
 
 func (s *server) ControlVNC(ctx context.Context, in *rpcnovnc.ReqControlVNC) (*rpcnovnc.ResControlVNC, error) {
-	var port string
+	var vncInfo model.Vnc
 	var errStack *errors.HccErrorStack = nil
 	var result rpcnovnc.ResControlVNC
 
 	vnc := in.GetVnc()
+	vncInfo.ServerUUID = vnc.GetServerUUID()
 
 	switch vnc.GetAction() {
 	case "CREATE":
-		port, errStack = driver.VNCD.Create(vnc.GetServerUUID())
+		errStack = driver.VNCD.Create(&vncInfo)
 		if errStack != nil {
 			result.HccErrorStack = errconv.HccStackToGrpc(errStack)
 			return &result, nil
 		}
+
 	case "DELETE":
-		errStack = driver.VNCD.Delete(vnc.GetServerUUID())
+		errStack = driver.VNCD.Delete(&vncInfo)
 		if errStack != nil {
 			result.HccErrorStack = errconv.HccStackToGrpc(errStack)
 			return &result, nil
 		}
-		port = "Success"
+		vncInfo.WebSocket = "Success"
+
 	case "UPDATE":
 	case "INFO":
 	default:
 		logger.Logger.Println("Undefined Action: " + vnc.GetAction())
-		errStack = errors.NewHccErrorStack(errors.NewHccError(errors.ViolinNoVNCGrpcOperationFail, "Undefined Action("+vnc.GetAction()+")"))
+		errStack = errors.NewHccErrorStack(errors.NewHccError(
+			errors.ViolinNoVNCGrpcOperationFail,
+			"Undefined Action("+vnc.GetAction()+")"))
 		result.HccErrorStack = errconv.HccStackToGrpc(errStack)
 	}
 
-	result.Port = port
+	result.Port = vncInfo.WebSocket
 
 	return &result, nil
 }
