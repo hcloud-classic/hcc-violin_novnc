@@ -11,6 +11,7 @@ import (
 	rpcnovnc "innogrid.com/hcloud-classic/pb"
 
 	"hcc/violin-novnc/action/grpc/errconv"
+	"hcc/violin-novnc/dao"
 	"hcc/violin-novnc/driver"
 	"hcc/violin-novnc/lib/config"
 	"hcc/violin-novnc/lib/logger"
@@ -33,7 +34,8 @@ func (s *server) CreateVNC(ctx context.Context, in *rpcnovnc.ReqNoVNC) (*rpcnovn
 func (s *server) ControlVNC(ctx context.Context, in *rpcnovnc.ReqControlVNC) (*rpcnovnc.ResControlVNC, error) {
 	var vncInfo model.Vnc
 	var errStack *errors.HccErrorStack = nil
-	var result rpcnovnc.ResControlVNC
+	var res rpcnovnc.ResControlVNC
+	var result string
 
 	vnc := in.GetVnc()
 	vncInfo.ServerUUID = vnc.GetServerUUID()
@@ -42,31 +44,40 @@ func (s *server) ControlVNC(ctx context.Context, in *rpcnovnc.ReqControlVNC) (*r
 	case "CREATE":
 		errStack = driver.VNCD.Create(&vncInfo)
 		if errStack != nil {
-			result.HccErrorStack = errconv.HccStackToGrpc(errStack)
-			return &result, nil
+			res.HccErrorStack = errconv.HccStackToGrpc(errStack)
+			result = "FAIL"
+			goto EXIT
 		}
+		result = "Success"
 
 	case "DELETE":
 		errStack = driver.VNCD.Delete(&vncInfo)
 		if errStack != nil {
-			result.HccErrorStack = errconv.HccStackToGrpc(errStack)
-			return &result, nil
+			res.HccErrorStack = errconv.HccStackToGrpc(errStack)
+			result = "FAIL"
+			goto EXIT
 		}
-		vncInfo.WebSocket = "Success"
+		result = "Success"
 
 	case "UPDATE":
 	case "INFO":
 	default:
+		vnc.Action = "UNDEFINED"
 		logger.Logger.Println("Undefined Action: " + vnc.GetAction())
 		errStack = errors.NewHccErrorStack(errors.NewHccError(
 			errors.ViolinNoVNCGrpcOperationFail,
 			"Undefined Action("+vnc.GetAction()+")"))
-		result.HccErrorStack = errconv.HccStackToGrpc(errStack)
+		res.HccErrorStack = errconv.HccStackToGrpc(errStack)
+		result = "Fail"
+		goto EXIT
 	}
 
-	result.Port = vncInfo.WebSocket
+	res.Port = result
 
-	return &result, nil
+EXIT:
+	_ = dao.InsertVNCRequestLog(vncInfo, vnc.GetUserID(), vnc.GetAction(), result)
+
+	return &res, nil
 }
 
 func InitGRPCServer() {

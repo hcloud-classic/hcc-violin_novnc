@@ -94,3 +94,14 @@ func GetVNCSrvSockPair() (*mysql.Rows, *errors.HccError) {
 
 	return result, nil
 }
+
+func InsertVNCRequestLog(vncInfo model.Vnc, userID, action, result string) *errors.HccError {
+	sql := "INSERT INTO `violin_novnc`.`vnc_connection_log`(server_uuid, user, request_type, result) values (?, ?, ?, ?);"
+
+	_, err := sendStmt(sql, vncInfo.ServerUUID, userID, action, result)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
