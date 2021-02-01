@@ -22,7 +22,7 @@ lint: ## Lint the files
 	@$(GOPATH)/bin/golint -set_exit_status ${PKG_LIST}
 
 test: ## Run unittests
-	@sudo -E $(GOROOT)/bin/go test -v ${PKG_LIST}
+	@sudo -E $(GOROOT)/bin/go test -count=1 -v ${PKG_LIST}
 
 race: ## Run data race detector
 	@sudo -E $(GOROOT)/bin/go test -race -v ${PKG_LIST}

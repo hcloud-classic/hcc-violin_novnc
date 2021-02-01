@@ -8,9 +8,9 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	errors "innogrid.com/hcloud-classic/hcc_errors"
+	"innogrid.com/hcloud-classic/hcc_errors/errconv"
 	rpcnovnc "innogrid.com/hcloud-classic/pb"
 
-	"hcc/violin-novnc/action/grpc/errconv"
 	"hcc/violin-novnc/dao"
 	"hcc/violin-novnc/driver"
 	"hcc/violin-novnc/lib/config"
