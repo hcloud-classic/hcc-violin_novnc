@@ -24,14 +24,14 @@ type Rows = sql.Rows
 type Result = sql.Result
 
 // Prepare : Connect to mysql and prepare pointer of mysql connection
-func Prepare() (*errors.HccError, func()) {
+func Prepare() (func(), *errors.HccError) {
 	var err error
 	Db, err = sql.Open("mysql",
 		config.Mysql.ID+":"+config.Mysql.Password+"@tcp("+
 			config.Mysql.Address+":"+strconv.Itoa(int(config.Mysql.Port))+")/"+
 			config.Mysql.Database+"?parseTime=true")
 	if err != nil {
-		return errors.NewHccError(errors.ViolinNoVNCInternalInitFail, "mysql open"), nil
+		return nil, errors.NewHccError(errors.ViolinNoVNCInternalInitFail, "mysql open")
 	}
 
 	timeTicker := time.NewTicker(1 * time.Second)
@@ -57,5 +57,5 @@ func Prepare() (*errors.HccError, func()) {
 		}
 	}()
 
-	return nil, cancel
+	return cancel, nil
 }

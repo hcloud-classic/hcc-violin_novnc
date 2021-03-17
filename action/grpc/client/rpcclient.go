@@ -3,11 +3,11 @@ package client
 import (
 	"sync"
 
-	rpcharp "innogrid.com/hcloud-classic/pb"
+	"innogrid.com/hcloud-classic/pb"
 )
 
 type RpcClient struct {
-	harp rpcharp.HarpClient
+	harp pb.HarpClient
 }
 
 var RC = &RpcClient{}

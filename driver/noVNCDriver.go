@@ -137,8 +137,8 @@ func (vncd *VNCDriver) getSingleSessionProxy(vncInfo *model.Vnc) *vncproxy.VncPr
 			TargetPort:     vncd.vncPort,
 			TargetPassword: vncd.vncPasswd, //"vncPass",
 			ID:             vncInfo.ServerUUID,
-			Status:         vncproxy.SessionStatusInit,
-			Type:           vncproxy.SessionTypeProxyPass,
+			// Status:         vncproxy.SessionStatusInit,
+			Type: vncproxy.SessionTypeProxyPass,
 		}, // to be used when not using sessions
 		UsingSessions: false, //false = single session - defined in the var above
 	}
@@ -228,7 +228,7 @@ func (vncd *VNCDriver) Delete(vncInfo *model.Vnc) *errors.HccErrorStack {
 
 	vncInfo.WebSocket = ws.(string)
 
-	// Prevent load before store from another go rutine
+	// Prevent load before store in another go rutine
 	vncd.addMutex.Lock()
 	cn, _ := vncd.serverConnectionMap.Load(vncInfo.ServerUUID)
 	if cn.(int) > 1 {

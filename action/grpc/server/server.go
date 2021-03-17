@@ -2,34 +2,16 @@ package server
 
 import (
 	"context"
-	"net"
-	"strconv"
 
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 	errors "innogrid.com/hcloud-classic/hcc_errors"
 	"innogrid.com/hcloud-classic/hcc_errors/errconv"
 	rpcnovnc "innogrid.com/hcloud-classic/pb"
 
 	"hcc/violin-novnc/dao"
 	"hcc/violin-novnc/driver"
-	"hcc/violin-novnc/lib/config"
 	"hcc/violin-novnc/lib/logger"
 	"hcc/violin-novnc/model"
 )
-
-type server struct {
-	rpcnovnc.UnimplementedNovncServer
-}
-
-var srv *grpc.Server
-
-/*
-func (s *server) CreateVNC(ctx context.Context, in *rpcnovnc.ReqNoVNC) (*rpcnovnc.ResNoVNC, error) {
-	driver.RunnerGRPC(in.Vncs)
-	return &rpcnovnc.ResNoVNC{Vncs: in.Vncs}, nil
-}
-*/
 
 func (s *server) ControlVNC(ctx context.Context, in *rpcnovnc.ReqControlVNC) (*rpcnovnc.ResControlVNC, error) {
 	var vncInfo model.Vnc
@@ -78,27 +60,4 @@ EXIT:
 	_ = dao.InsertVNCRequestLog(vncInfo, vnc.GetUserID(), vnc.GetAction(), result)
 
 	return &res, nil
-}
-
-func InitGRPCServer() {
-
-	lis, err := net.Listen("tcp", ":"+strconv.FormatInt(config.Grpc.Port, 10))
-	if err != nil {
-		logger.Logger.Fatalf("failed to listen: %v", err)
-	}
-	defer lis.Close()
-	logger.Logger.Println("Opening server on port " + strconv.FormatInt(config.Grpc.Port, 10) + "...")
-
-	srv = grpc.NewServer()
-	rpcnovnc.RegisterNovncServer(srv, &server{})
-	reflection.Register(srv)
-
-	err = srv.Serve(lis)
-	if err != nil {
-		logger.Logger.Fatalf("failed to serve: %v", err)
-	}
-}
-
-func CleanGRPCServer() {
-	srv.Stop()
 }

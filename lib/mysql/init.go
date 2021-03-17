@@ -7,7 +7,7 @@ import (
 var cancelHealthCheck func()
 
 func Init() *errors.HccError {
-	err, cancel := Prepare()
+	cancel, err := Prepare()
 	cancelHealthCheck = cancel
 	return err
 }

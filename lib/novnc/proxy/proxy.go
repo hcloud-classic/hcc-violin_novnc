@@ -176,8 +176,8 @@ func (vp *VncProxy) StartListening() error {
 		PixelFormat:      common.NewPixelFormat(32),
 		ClientMessages:   server.DefaultClientMessages,
 		DesktopName:      []byte("workDesk"),
-		Height:           uint16(768),
-		Width:            uint16(1024),
+		Height:           uint16(600),
+		Width:            uint16(800),
 		NewConnHandler:   vp.newServerConnHandler,
 		UseDummySession:  !vp.UsingSessions,
 	}

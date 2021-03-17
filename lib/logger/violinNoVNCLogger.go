@@ -52,7 +52,7 @@ func Prepare() bool {
 		month := fmt.Sprintf("%02d", now.Month())
 		day := fmt.Sprintf("%02d", now.Day())
 
-		date := year + month + day
+		date := year + "-" + month + "-" + day
 
 		FpLog, err := os.OpenFile("/var/log/"+LogName+"/"+
 			LogName+"_"+date+".log", os.O_CREATE|os.O_RDWR|os.O_APPEND, 0666)
@@ -61,8 +61,8 @@ func Prepare() bool {
 			return
 		}
 
-		Logger = log.New(io.MultiWriter(FpLog, os.Stdout), LogName+"_logger: ", log.Ldate|log.Ltime)
-		Flogger = log.New(io.Writer(os.Stdout), LogName+"_logger: ", log.Ldate|log.Ltime)
+		Logger = log.New(io.MultiWriter(FpLog, os.Stdout), "", log.Ldate|log.Ltime)
+		Flogger = log.New(io.Writer(os.Stdout), "", log.Ldate|log.Ltime)
 
 		returnValue = true
 	})
