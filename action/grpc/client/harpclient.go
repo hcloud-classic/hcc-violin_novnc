@@ -9,9 +9,9 @@ import (
 
 	"google.golang.org/grpc"
 	errors "innogrid.com/hcloud-classic/hcc_errors"
-	"innogrid.com/hcloud-classic/hcc_errors/errconv"
-	rpcharp "innogrid.com/hcloud-classic/pb"
+	pb "innogrid.com/hcloud-classic/pb"
 
+	"hcc/violin-novnc/action/grpc/errconv"
 	"hcc/violin-novnc/lib/config"
 	"hcc/violin-novnc/lib/logger"
 )
@@ -27,7 +27,7 @@ func initHarp(wg *sync.WaitGroup) *errors.HccError {
 		return errors.NewHccError(errors.ViolinNoVNCGrpcConnectionFail, "harp : "+err.Error())
 	}
 
-	RC.harp = rpcharp.NewHarpClient(harpconn)
+	RC.harp = pb.NewHarpClient(harpconn)
 	logger.Logger.Println("GRPC connection to harp created")
 
 	wg.Done()
@@ -45,7 +45,7 @@ func (rc *RpcClient) GetServerIP(srvUUID string) (string, *errors.HccErrorStack)
 	ctx, cancel := context.WithTimeout(context.Background(),
 		time.Duration(config.Harp.RequestTimeoutMs)*time.Millisecond)
 	defer cancel()
-	res, err := rc.harp.GetSubnetByServer(ctx, &rpcharp.ReqGetSubnetByServer{ServerUUID: srvUUID})
+	res, err := rc.harp.GetSubnetByServer(ctx, &pb.ReqGetSubnetByServer{ServerUUID: srvUUID})
 	if err != nil {
 		errStack = errors.NewHccErrorStack(errors.NewHccError(errors.ViolinNoVNCGrpcReceiveError, err.Error()))
 		return "", errStack

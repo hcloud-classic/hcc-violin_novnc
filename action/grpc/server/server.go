@@ -4,9 +4,9 @@ import (
 	"context"
 
 	errors "innogrid.com/hcloud-classic/hcc_errors"
-	"innogrid.com/hcloud-classic/hcc_errors/errconv"
 	rpcnovnc "innogrid.com/hcloud-classic/pb"
 
+	"hcc/violin-novnc/action/grpc/errconv"
 	"hcc/violin-novnc/dao"
 	"hcc/violin-novnc/driver"
 	"hcc/violin-novnc/lib/logger"
