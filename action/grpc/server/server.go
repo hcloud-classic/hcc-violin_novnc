@@ -7,12 +7,12 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"hcc/violin-novnc/action/grpc/errconv"
-	rpcnovnc "hcc/violin-novnc/action/grpc/pb/rpcviolin_novnc"
+	errors "innogrid.com/hcloud-classic/hcc_errors"
+	rpcnovnc "innogrid.com/hcloud-classic/pb"
 
+	"hcc/violin-novnc/action/grpc/errconv"
 	"hcc/violin-novnc/driver"
 	"hcc/violin-novnc/lib/config"
-	"hcc/violin-novnc/lib/errors"
 	"hcc/violin-novnc/lib/logger"
 )
 
@@ -65,12 +65,12 @@ func (s *server) ControlVNC(ctx context.Context, in *rpcnovnc.ReqControlVNC) (*r
 
 func InitGRPCServer() {
 
-	lis, err := net.Listen("tcp", ":"+strconv.FormatInt(config.HTTP.Port, 10))
+	lis, err := net.Listen("tcp", ":"+strconv.FormatInt(config.Grpc.Port, 10))
 	if err != nil {
 		logger.Logger.Fatalf("failed to listen: %v", err)
 	}
 	defer lis.Close()
-	logger.Logger.Println("Opening server on port " + strconv.FormatInt(config.HTTP.Port, 10) + "...")
+	logger.Logger.Println("Opening server on port " + strconv.FormatInt(config.Grpc.Port, 10) + "...")
 
 	srv = grpc.NewServer()
 	rpcnovnc.RegisterNovncServer(srv, &server{})

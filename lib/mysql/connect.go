@@ -5,9 +5,9 @@ import (
 	"strconv"
 
 	_ "github.com/go-sql-driver/mysql" // Needed for connect mysql
+	errors "innogrid.com/hcloud-classic/hcc_errors"
 
 	"hcc/violin-novnc/lib/config"
-	"hcc/violin-novnc/lib/errors"
 )
 
 // Db : Pointer of mysql connection

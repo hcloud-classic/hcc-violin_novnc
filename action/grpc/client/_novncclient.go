@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
+	errors "innogrid.com/hcloud-classic/hcc_errors"
 
-	rpcnovnc "hcc/violin-novnc/action/grpc/pb/rpcviolin_novnc"
 	"hcc/violin-novnc/lib/config"
-	"hcc/violin-novnc/lib/errors"
 	"hcc/violin-novnc/lib/logger"
+	rpcnovnc "innogrid.com/hcloud-classic/pb"
 )
 
 var novncconn grpc.ClientConn

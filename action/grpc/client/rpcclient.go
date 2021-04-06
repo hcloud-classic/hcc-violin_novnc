@@ -3,7 +3,7 @@ package client
 import (
 	"sync"
 
-	"hcc/violin-novnc/action/grpc/pb/rpcharp"
+	rpcharp "innogrid.com/hcloud-classic/pb"
 )
 
 type RpcClient struct {
