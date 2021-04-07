@@ -54,7 +54,7 @@ func (s *server) ControlVNC(ctx context.Context, in *rpcnovnc.ReqControlVNC) (*r
 		goto EXIT
 	}
 
-	res.Port = result
+	res.Port = vncInfo.WebSocket
 
 EXIT:
 	_ = dao.InsertVNCRequestLog(vncInfo, vnc.GetUserID(), vnc.GetAction(), result)
