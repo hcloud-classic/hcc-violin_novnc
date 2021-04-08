@@ -1,0 +1,10 @@
+violin_novnc
+coverage.out
+goreport_grade
+.idea/
+.vscode/
+/vendor
+/_venodr-*
+nohup.out
+*.swp
+
