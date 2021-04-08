@@ -21,6 +21,7 @@ func (s *server) ControlVNC(ctx context.Context, in *rpcnovnc.ReqControlVNC) (*r
 
 	vnc := in.GetVnc()
 	vncInfo.ServerUUID = vnc.GetServerUUID()
+	vncInfo.WebSocket = ""
 
 	switch vnc.GetAction() {
 	case "CREATE":
