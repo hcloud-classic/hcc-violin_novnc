@@ -35,10 +35,10 @@ func sendQuery(sql string) (*mysql.Rows, *errors.HccError) {
 	return result, nil
 }
 
-// CreateVNC : VNC DB createS
+// InsertVNCInfo : Insert VNC allocated info to the database
 func InsertVNCInfo(vncInfo model.Vnc) *errors.HccError {
 
-	sql := "INSERT IGNORE INTO `violin_novnc`.`allocated_socket`(socket_number, server_uuid, user_cnt, last_recently_used) values (?, ?, ?, now());"
+	sql := "INSERT IGNORE INTO `violin_novnc`.`allocated_port`(port_number, server_uuid, user_cnt, last_recently_used) values (?, ?, ?, now());"
 
 	_, err := sendStmt(sql, vncInfo.WebSocket, vncInfo.ServerUUID, vncInfo.UserCount)
 	if err != nil {
@@ -49,7 +49,7 @@ func InsertVNCInfo(vncInfo model.Vnc) *errors.HccError {
 }
 
 func DeleteVNCInfo(vncInfo model.Vnc) *errors.HccError {
-	sql := "DELETE FROM `violin_novnc`.`allocated_socket` WHERE socket_number = ?"
+	sql := "DELETE FROM `violin_novnc`.`allocated_port` WHERE port_number = ?"
 
 	_, err := sendStmt(sql, vncInfo.WebSocket)
 	if err != nil {
@@ -61,7 +61,7 @@ func DeleteVNCInfo(vncInfo model.Vnc) *errors.HccError {
 
 func IncreaseVNCUserCount(vncInfo model.Vnc) *errors.HccError {
 
-	sql := "UPDATE `violin_novnc`.`allocated_socket` SET user_cnt = user_cnt + 1 WHERE socket_number = ?;"
+	sql := "UPDATE `violin_novnc`.`allocated_port` SET user_cnt = user_cnt + 1 WHERE port_number = ?;"
 
 	_, err := sendStmt(sql, vncInfo.WebSocket)
 	if err != nil {
@@ -73,7 +73,7 @@ func IncreaseVNCUserCount(vncInfo model.Vnc) *errors.HccError {
 
 func DecreaseVNCUserCount(vncInfo model.Vnc) *errors.HccError {
 
-	sql := "UPDATE `violin_novnc`.`allocated_socket` SET user_cnt = user_cnt - 1 WHERE socket_number = ?;"
+	sql := "UPDATE `violin_novnc`.`allocated_port` SET user_cnt = user_cnt - 1 WHERE port_number = ?;"
 
 	_, err := sendStmt(sql, vncInfo.WebSocket)
 	if err != nil {
@@ -85,7 +85,7 @@ func DecreaseVNCUserCount(vncInfo model.Vnc) *errors.HccError {
 
 func GetVNCSrvSockPair() (*mysql.Rows, *errors.HccError) {
 
-	sql := "SELECT `socket_number`, `server_uuid`, `user_cnt` FROM `violin_novnc`.`allocated_socket` ORDER BY `socket_number` ASC"
+	sql := "SELECT `port_number`, `server_uuid`, `user_cnt` FROM `violin_novnc`.`allocated_port` ORDER BY `port_number` ASC"
 
 	result, err := sendQuery(sql)
 	if err != nil {

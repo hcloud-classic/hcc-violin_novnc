@@ -147,7 +147,7 @@ func (vncd *VNCDriver) getSingleSessionProxy(vncInfo *model.Vnc) *vncproxy.VncPr
 }
 
 func (vncd *VNCDriver) Create(vncInfo *model.Vnc) *errors.HccErrorStack {
-	var esCreate *errors.HccErrorStack = errors.NewHccErrorStack(
+	var esCreate = errors.NewHccErrorStack(
 		errors.NewHccError(errors.ViolinNoVNCDriverOperationFail, "Create VNC Proxy"))
 
 	logger.Logger.Print("Find exist VNC proxy websocket...")
