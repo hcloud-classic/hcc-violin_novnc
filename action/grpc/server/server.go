@@ -43,7 +43,9 @@ func (s *server) ControlVNC(ctx context.Context, in *rpcnovnc.ReqControlVNC) (*r
 		result = "Success"
 
 	case "UPDATE":
+		fallthrough
 	case "INFO":
+		fallthrough
 	default:
 		vnc.Action = "UNDEFINED"
 		logger.Logger.Println("Undefined Action: " + vnc.GetAction())
