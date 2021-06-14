@@ -3,12 +3,16 @@ stages:
     - test
     - build
     - deploy
+    - run
 
 before_script:
     - export GOROOT="/usr/local/go"
     - export GOPATH="/home/gitlab-runner/go"
     - export PATH="$PATH:$GOROOT/bin:$GOPATH/bin"
     - export GOPROXY=direct
+    - export Branch_Name="$CI_COMMIT_REF_NAME"
+    - export Serivce_Name="violin-novnc"
+    - export Build_Path="/home/gitlab-runner/tmp_build"
 
 copy_dir:
     stage: init
@@ -42,20 +46,23 @@ go_report:
 #  script:
 #    - make lint_dep
 #    - make lint
-
 build:
   stage: build
   script:
     - make
+    - if [[ ! -d "$Build_Path/$Serivce_Name/$Branch_Name" ]]; then mkdir -p $Build_Path/$Serivce_Name/$Branch_Name;fi
+    - cp -f $PWD/$Serivce_Name $Build_Path/$Serivce_Name/$Branch_Name/
+    - echo "Build Complete"
 
-deploy:
-  stage: deploy
+service_run:
+  stage: run
   script:
-    - make # Binary file is removed at start of new stage. Rebuild.
-    - sudo /usr/sbin/service violin_novnc stop
-    - sudo cp $PWD/violin_novnc /bin/violin_novnc
-    - sudo chmod 755 /bin/violin_novnc
-    - sudo /usr/sbin/service violin_novnc start
+    - sudo /usr/sbin/service $Serivce_Name stop
+    - sudo cp $Build_Path/$Serivce_Name/$Branch_Name/$Serivce_Name /usr/local/bin/$Serivce_Name
+    - sudo chmod 755 /usr/local/bin/$Serivce_Name
+    - sudo /usr/sbin/service $Serivce_Name start
+    - sudo rm -rf $Build_Path/$Serivce_Name/$Branch_Name
     - echo "Finished"
   only:
-  - master
+    - master
+    - feature/dev
