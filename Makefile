@@ -1,6 +1,6 @@
 ROOT_PROJECT_NAME := "hcc"
 PROJECT_NAME := "violin-novnc"
-BINARY_NAME := "violin_novnc"
+BINARY_NAME := "violin-novnc"
 PKG_LIST := $(shell go list ${ROOT_PROJECT_NAME}/${PROJECT_NAME}/...)
 
 PROTO_PROJECT_NAME := "melody"
