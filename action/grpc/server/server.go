@@ -15,7 +15,7 @@ import (
 
 func (s *server) ControlVNC(ctx context.Context, in *rpcnovnc.ReqControlVNC) (*rpcnovnc.ResControlVNC, error) {
 	var vncInfo model.Vnc
-	var errStack *errors.HccErrorStack = nil
+	var errStack *errors.HccErrorStack
 	var res rpcnovnc.ResControlVNC
 	var result string
 

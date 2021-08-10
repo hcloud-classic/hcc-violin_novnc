@@ -71,7 +71,7 @@ func TcpServe(url string, cfg *ServerConfig) error {
 	return nil
 }
 
-func attachNewServerConn(c io.ReadWriter, cfg *ServerConfig, sessionId string) error {
+func attachNewServerConn(c io.ReadWriter, cfg *ServerConfig, sessionID string) error {
 
 	conn, err := NewServerConn(c, cfg)
 	if err != nil {
@@ -80,12 +80,12 @@ func attachNewServerConn(c io.ReadWriter, cfg *ServerConfig, sessionId string) e
 
 	if err := ServerVersionHandler(cfg, conn); err != nil {
 		logger.Logger.Printf("err: %v\n", err)
-		conn.Close()
+		_ = conn.Close()
 		return err
 	}
 
 	if err := ServerSecurityHandler(cfg, conn); err != nil {
-		conn.Close()
+		_ = conn.Close()
 		return err
 	}
 
@@ -94,27 +94,27 @@ func attachNewServerConn(c io.ReadWriter, cfg *ServerConfig, sessionId string) e
 	// (and maybe even interception in the future)
 	err = cfg.NewConnHandler(cfg, conn)
 	if err != nil {
-		conn.Close()
+		_ = conn.Close()
 		return err
 	}
 
 	if err := ServerClientInitHandler(cfg, conn); err != nil {
-		conn.Close()
+		_ = conn.Close()
 		return err
 	}
 
 	if err := ServerServerInitHandler(cfg, conn); err != nil {
-		conn.Close()
+		_ = conn.Close()
 		return err
 	}
 
-	conn.SessionId = sessionId
+	conn.SessionId = sessionID
 	if cfg.UseDummySession {
 		conn.SessionId = "dummySession"
 	}
 
 	//go here will kill ws connections
-	conn.handle()
+	_ = conn.handle()
 
 	return nil
 }

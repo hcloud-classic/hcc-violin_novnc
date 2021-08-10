@@ -215,7 +215,7 @@ func (vncd *VNCDriver) Create(vncInfo *model.Vnc) *errors.HccErrorStack {
 }
 
 func (vncd *VNCDriver) Delete(vncInfo *model.Vnc) *errors.HccErrorStack {
-	var es *errors.HccErrorStack = nil
+	var es *errors.HccErrorStack
 
 	ws, b := vncd.serverWSMap.Load(vncInfo.ServerUUID)
 	if !b {

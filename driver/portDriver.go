@@ -34,12 +34,12 @@ func (pd *PortDriver) GetAvailablePort() string {
 
 	if pd.lastPort < portMin {
 		return ""
-	} else {
-		port = pd.lastPort
-		pd.lastPort -= 1
-
-		return strconv.Itoa(port)
 	}
+
+	port = pd.lastPort
+	pd.lastPort--
+
+	return strconv.Itoa(port)
 }
 
 func (pd *PortDriver) SetLastPort(port string) {
