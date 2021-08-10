@@ -1,6 +1,6 @@
 ROOT_PROJECT_NAME := "hcc"
 PROJECT_NAME := "violin-novnc"
-BINARY_NAME := "violin_novnc"
+BINARY_NAME := "violin-novnc"
 PKG_LIST := $(shell go list ${ROOT_PROJECT_NAME}/${PROJECT_NAME}/...)
 
 PROTO_PROJECT_NAME := "melody"
@@ -22,7 +22,7 @@ lint: ## Lint the files
 	@$(GOPATH)/bin/golint -set_exit_status ${PKG_LIST}
 
 test: ## Run unittests
-	@sudo -E $(GOROOT)/bin/go test -v ${PKG_LIST}
+	@sudo -E $(GOROOT)/bin/go test -count=1 -v ${PKG_LIST}
 
 race: ## Run data race detector
 	@sudo -E $(GOROOT)/bin/go test -race -v ${PKG_LIST}

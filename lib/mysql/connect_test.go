@@ -4,27 +4,29 @@ import (
 	"hcc/violin-novnc/lib/config"
 	"hcc/violin-novnc/lib/logger"
 	"testing"
+
+	"innogrid.com/hcloud-classic/hcc_errors"
 )
 
 func Test_DB_Prepare(t *testing.T) {
-
-	t.Skip()
-
 	err := logger.Init()
 	if err != nil {
-		t.Fatal("Failed to init logger!")
+		hcc_errors.SetErrLogger(logger.Logger)
+		hcc_errors.NewHccError(hcc_errors.PiccoloInternalInitFail, "logger.Init(): "+err.Error()).Fatal()
 	}
+	hcc_errors.SetErrLogger(logger.Logger)
+
 	defer func() {
-		_ = logger.FpLog.Close()
+		logger.End()
 	}()
 
-	config.Parser()
+	config.Init()
 
 	err = Init()
 	if err != nil {
-		t.Fatal(err.Error())
+		t.Fatal(err)
 	}
 	defer func() {
-		_ = Db.Close()
+		End()
 	}()
 }

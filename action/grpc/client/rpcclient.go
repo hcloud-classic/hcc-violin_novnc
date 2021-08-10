@@ -1,26 +1,29 @@
 package client
 
 import (
-	"sync"
-
-	rpcharp "innogrid.com/hcloud-classic/pb"
+	"innogrid.com/hcloud-classic/pb"
 )
 
-type RpcClient struct {
-	harp rpcharp.HarpClient
+// RPCClient : Struct type of gRPC clients
+type RPCClient struct {
+	harp pb.HarpClient
 }
 
-var RC = &RpcClient{}
+// RC : Exported variable pointed to RPCClient
+var RC = &RPCClient{}
 
-func InitGRPCClient() {
-	var wg sync.WaitGroup
+// Init : Initialize clients of gRPC
+func Init() error {
+	err := initHarp()
+	if err != nil {
+		return err
+	}
+	checkHarp()
 
-	wg.Add(1)
-	go initHarp(&wg)
-
-	wg.Wait()
+	return nil
 }
 
-func CleanGRPCClient() {
-	cleanHarp()
+// End : Close connections of gRPC clients
+func End() {
+	closeHarp()
 }

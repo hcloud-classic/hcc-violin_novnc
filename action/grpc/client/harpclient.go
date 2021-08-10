@@ -2,51 +2,94 @@ package client
 
 import (
 	"context"
+	"net"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"google.golang.org/grpc"
 	errors "innogrid.com/hcloud-classic/hcc_errors"
-	rpcharp "innogrid.com/hcloud-classic/pb"
+	"innogrid.com/hcloud-classic/pb"
 
 	"hcc/violin-novnc/action/grpc/errconv"
-
 	"hcc/violin-novnc/lib/config"
 	"hcc/violin-novnc/lib/logger"
 )
 
-var harpconn *grpc.ClientConn
+var harpConn *grpc.ClientConn
 
-func initHarp(wg *sync.WaitGroup) *errors.HccError {
+func initHarp() error {
 	var err error
-	addr := config.Harp.Address + ":" + strconv.FormatInt(config.Harp.Port, 10)
-	logger.Logger.Println("Try connect to harp " + addr)
-	harpconn, err = grpc.Dial(addr, grpc.WithInsecure(), grpc.WithBlock())
+
+	addr := config.Harp.ServerAddress + ":" + strconv.FormatInt(config.Harp.ServerPort, 10)
+	harpConn, err = grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
-		return errors.NewHccError(errors.ViolinNoVNCGrpcConnectionFail, "harp : "+err.Error())
+		return err
 	}
 
-	RC.harp = rpcharp.NewHarpClient(harpconn)
-	logger.Logger.Println("GRPC connection to harp created")
+	RC.harp = pb.NewHarpClient(harpConn)
+	logger.Logger.Println("gRPC harp client ready")
 
-	wg.Done()
 	return nil
 }
 
-func cleanHarp() {
-	harpconn.Close()
+func closeHarp() {
+	_ = harpConn.Close()
 }
 
-func (rc *RpcClient) GetServerIP(srvUUID string) (string, *errors.HccErrorStack) {
+func pingHarp() bool {
+	conn, err := net.DialTimeout("tcp", net.JoinHostPort(config.Harp.ServerAddress,
+		strconv.FormatInt(config.Harp.ServerPort, 10)),
+		time.Duration(config.Grpc.ClientPingTimeoutMs)*time.Millisecond)
+	if err != nil {
+		return false
+	}
+	if conn != nil {
+		defer func() {
+			_ = conn.Close()
+		}()
+		return true
+	}
+
+	return false
+}
+
+func checkHarp() {
+	ticker := time.NewTicker(time.Duration(config.Grpc.ClientPingIntervalMs) * time.Millisecond)
+	go func() {
+		connOk := true
+		for range ticker.C {
+			pingOk := pingHarp()
+			if pingOk {
+				if !connOk {
+					logger.Logger.Println("checkHarp(): Ping Ok! Resetting connection...")
+					closeHarp()
+					err := initHarp()
+					if err != nil {
+						logger.Logger.Println("checkHarp(): " + err.Error())
+						continue
+					}
+					connOk = true
+				}
+			} else {
+				if connOk {
+					logger.Logger.Println("checkHarp(): Harp module seems dead. Pinging...")
+				}
+				connOk = false
+			}
+		}
+	}()
+}
+
+// GetServerIP : Get the server's Leader Node IP address
+func (rc *RPCClient) GetServerIP(srvUUID string) (string, *errors.HccErrorStack) {
 	var srvIP string
-	var errStack *errors.HccErrorStack = nil
+	var errStack *errors.HccErrorStack
 
 	ctx, cancel := context.WithTimeout(context.Background(),
 		time.Duration(config.Harp.RequestTimeoutMs)*time.Millisecond)
 	defer cancel()
-	res, err := rc.harp.GetSubnetByServer(ctx, &rpcharp.ReqGetSubnetByServer{ServerUUID: srvUUID})
+	res, err := rc.harp.GetSubnetByServer(ctx, &pb.ReqGetSubnetByServer{ServerUUID: srvUUID})
 	if err != nil {
 		errStack = errors.NewHccErrorStack(errors.NewHccError(errors.ViolinNoVNCGrpcReceiveError, err.Error()))
 		return "", errStack
@@ -58,4 +101,30 @@ func (rc *RpcClient) GetServerIP(srvUUID string) (string, *errors.HccErrorStack)
 		errStack = errconv.GrpcStackToHcc(es)
 	}
 	return srvIP, errStack
+}
+
+// CreatePortForwarding : Create the AdaptiveIP Port Forwarding
+func (rc *RPCClient) CreatePortForwarding(in *pb.ReqCreatePortForwarding) (*pb.ResCreatePortForwarding, error) {
+	ctx, cancel := context.WithTimeout(context.Background(),
+		time.Duration(config.Harp.RequestTimeoutMs)*time.Millisecond)
+	defer cancel()
+	resCreatePortForwarding, err := rc.harp.CreatePortForwarding(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return resCreatePortForwarding, nil
+}
+
+// DeletePortForwarding : Delete the AdaptiveIP Port Forwarding
+func (rc *RPCClient) DeletePortForwarding(in *pb.ReqDeletePortForwarding) (*pb.ResDeletePortForwarding, error) {
+	ctx, cancel := context.WithTimeout(context.Background(),
+		time.Duration(config.Harp.RequestTimeoutMs)*time.Millisecond)
+	defer cancel()
+	resDeletePortForwarding, err := rc.harp.DeletePortForwarding(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return resDeletePortForwarding, nil
 }

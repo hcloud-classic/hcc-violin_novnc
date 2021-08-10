@@ -170,7 +170,7 @@ func (c *ClientConn) CutText(text string) error {
 // See RFC 6143 Section 7.5.3
 func (c *ClientConn) FramebufferUpdateRequest(incremental bool, x, y, width, height uint16) error {
 	var buf bytes.Buffer
-	var incrementalByte uint8 = 0
+	var incrementalByte uint8
 
 	if incremental {
 		incrementalByte = 1
@@ -202,7 +202,7 @@ func (c *ClientConn) FramebufferUpdateRequest(incremental bool, x, y, width, hei
 //
 // See 7.5.4.
 func (c *ClientConn) KeyEvent(keysym uint32, down bool) error {
-	var downFlag uint8 = 0
+	var downFlag uint8
 	if down {
 		downFlag = 1
 	}
@@ -507,7 +507,7 @@ func (c *ClientConn) mainLoop() {
 			// Unsupported message type! Bad!
 			break
 		}
-		logger.Logger.Printf("ClientConn.MainLoop: got ServerMessage:%s", common.ServerMessageType(messageType))
+		// logger.Logger.Printf("ClientConn.MainLoop: got ServerMessage:%s", common.ServerMessddageType(messageType))
 		reader.SendMessageStart(common.ServerMessageType(messageType))
 		reader.PublishBytes([]byte{byte(messageType)})
 

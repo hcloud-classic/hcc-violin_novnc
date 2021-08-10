@@ -2,32 +2,41 @@ package mysql
 
 import (
 	"database/sql"
-	"strconv"
-
 	_ "github.com/go-sql-driver/mysql" // Needed for connect mysql
-	errors "innogrid.com/hcloud-classic/hcc_errors"
-
 	"hcc/violin-novnc/lib/config"
+	"hcc/violin-novnc/lib/logger"
+	"strconv"
 )
 
 // Db : Pointer of mysql connection
 var Db *sql.DB
 
-// Prepare : Connect to mysql and prepare pointer of mysql connection
-func Prepare() *errors.HccError {
+// Init : Initialize mysql connection
+func Init() error {
 	var err error
 	Db, err = sql.Open("mysql",
 		config.Mysql.ID+":"+config.Mysql.Password+"@tcp("+
 			config.Mysql.Address+":"+strconv.Itoa(int(config.Mysql.Port))+")/"+
 			config.Mysql.Database+"?parseTime=true")
 	if err != nil {
-		return errors.NewHccError(errors.ViolinNoVNCInternalInitFail, "mysql open")
+		logger.Logger.Println(err)
+		return err
 	}
 
 	err = Db.Ping()
 	if err != nil {
-		return errors.NewHccError(errors.ViolinNoVNCInternalInitFail, "mysql ping")
+		logger.Logger.Println(err)
+		return err
 	}
 
+	logger.Logger.Println("Connected to MySQL database")
+
 	return nil
+}
+
+// End : Close mysql connection
+func End() {
+	if Db != nil {
+		_ = Db.Close()
+	}
 }
