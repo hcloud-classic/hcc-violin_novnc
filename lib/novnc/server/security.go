@@ -196,11 +196,11 @@ func (*ServerAuthVNC) SubType() SecuritySubType {
 	return SecSubTypeUnknown
 }
 
-const AUTH_FAIL = "Authentication Failure"
+const AuthFail = "Authentication Failure"
 
 func (auth *ServerAuthVNC) Auth(c common.IServerConn) error {
-	buf := make([]byte, 8+len([]byte(AUTH_FAIL)))
-	rand.Read(buf[:16]) // Random 16 bytes in buf
+	buf := make([]byte, 8+len([]byte(AuthFail)))
+	_, _ = rand.Read(buf[:16]) // Random 16 bytes in buf
 	sndsz, err := c.Write(buf[:16])
 	if err != nil {
 		log.Printf("Error sending challenge to client: %s\n", err.Error())
@@ -228,8 +228,8 @@ func (auth *ServerAuthVNC) Auth(c common.IServerConn) error {
 	bk.Encrypt(buf3[8:], buf[8:])       // Encrypt second 8 bytes
 	if bytes.Compare(buf2, buf3) != 0 { // If the result does not decrypt correctly to what we sent then a problem
 		SetUint32(buf, 0, 1)
-		SetUint32(buf, 4, uint32(len([]byte(AUTH_FAIL))))
-		copy(buf[8:], []byte(AUTH_FAIL))
+		SetUint32(buf, 4, uint32(len([]byte(AuthFail))))
+		copy(buf[8:], []byte(AuthFail))
 		c.Write(buf)
 		//c.Flush()
 		return errors.New("Authentication failed")

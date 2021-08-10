@@ -34,13 +34,13 @@ func (wsServer *WsServer) Listen(urlStr string, handlerFunc WsHandler) {
 	wsServer.mux.Handle(url.Path, websocket.Handler(
 		func(ws *websocket.Conn) {
 			path := ws.Request().URL.Path
-			var sessionId string
+			var sessionID string
 			if path != "" {
-				sessionId = path[1:]
+				sessionID = path[1:]
 			}
 
 			ws.PayloadType = websocket.BinaryFrame
-			handlerFunc(ws, wsServer.cfg, sessionId)
+			handlerFunc(ws, wsServer.cfg, sessionID)
 		}))
 
 	// err = http.ListenAndServe(url.Host, nil)
@@ -52,6 +52,7 @@ func (wsServer *WsServer) Listen(urlStr string, handlerFunc WsHandler) {
 	}
 }
 
+// Shutdown : Shutdown the proxy server
 func (wsServer *WsServer) Shutdown() {
-	wsServer.proxyServer.Shutdown(context.Background())
+	_ = wsServer.proxyServer.Shutdown(context.Background())
 }

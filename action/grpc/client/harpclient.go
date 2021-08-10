@@ -9,7 +9,7 @@ import (
 
 	"google.golang.org/grpc"
 	errors "innogrid.com/hcloud-classic/hcc_errors"
-	pb "innogrid.com/hcloud-classic/pb"
+	"innogrid.com/hcloud-classic/pb"
 
 	"hcc/violin-novnc/action/grpc/errconv"
 	"hcc/violin-novnc/lib/config"
@@ -35,12 +35,13 @@ func initHarp(wg *sync.WaitGroup) *errors.HccError {
 }
 
 func cleanHarp() {
-	harpconn.Close()
+	_ = harpconn.Close()
 }
 
+// GetServerIP : Get the server's Leader Node IP address
 func (rc *RpcClient) GetServerIP(srvUUID string) (string, *errors.HccErrorStack) {
 	var srvIP string
-	var errStack *errors.HccErrorStack = nil
+	var errStack *errors.HccErrorStack
 
 	ctx, cancel := context.WithTimeout(context.Background(),
 		time.Duration(config.Harp.RequestTimeoutMs)*time.Millisecond)
