@@ -102,3 +102,29 @@ func (rc *RPCClient) GetServerIP(srvUUID string) (string, *errors.HccErrorStack)
 	}
 	return srvIP, errStack
 }
+
+// CreatePortForwarding : Create the AdaptiveIP Port Forwarding
+func (rc *RPCClient) CreatePortForwarding(in *pb.ReqCreatePortForwarding) (*pb.ResCreatePortForwarding, error) {
+	ctx, cancel := context.WithTimeout(context.Background(),
+		time.Duration(config.Harp.RequestTimeoutMs)*time.Millisecond)
+	defer cancel()
+	resCreatePortForwarding, err := rc.harp.CreatePortForwarding(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return resCreatePortForwarding, nil
+}
+
+// DeletePortForwarding : Delete the AdaptiveIP Port Forwarding
+func (rc *RPCClient) DeletePortForwarding(in *pb.ReqDeletePortForwarding) (*pb.ResDeletePortForwarding, error) {
+	ctx, cancel := context.WithTimeout(context.Background(),
+		time.Duration(config.Harp.RequestTimeoutMs)*time.Millisecond)
+	defer cancel()
+	resDeletePortForwarding, err := rc.harp.DeletePortForwarding(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return resDeletePortForwarding, nil
+}
