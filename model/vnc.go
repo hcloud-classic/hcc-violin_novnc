@@ -7,7 +7,7 @@ type Vnc struct {
 	ServerUUID string           `json:"server_uuid"`
 	ServerIP   string           `json:"server_ip"`
 	WebSocket  string           `json:"port_number"`
-	UserCount string           `json:"user_cnt"`
-	LastUsed  string           `json:"last_recently_used"`
-	Errors    *errors.HccError `json:"error"`
+	UserCount  string           `json:"user_cnt"`
+	LastUsed   string           `json:"last_recently_used"`
+	Errors     *errors.HccError `json:"error"`
 }

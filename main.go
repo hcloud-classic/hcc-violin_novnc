@@ -7,35 +7,42 @@ import (
 	"hcc/violin-novnc/lib/config"
 	"hcc/violin-novnc/lib/logger"
 	"hcc/violin-novnc/lib/mysql"
+
+	"innogrid.com/hcloud-classic/hcc_errors"
 )
 
 func init() {
 	err := logger.Init()
 	if err != nil {
-		err.Fatal()
+		hcc_errors.SetErrLogger(logger.Logger)
+		hcc_errors.NewHccError(hcc_errors.ViolinNoVNCInternalInitFail, "logger.Init(): "+err.Error()).Fatal()
 	}
+	hcc_errors.SetErrLogger(logger.Logger)
 
-	config.Parser()
+	config.Init()
 
 	err = mysql.Init()
 	if err != nil {
-		err.Fatal()
+		hcc_errors.NewHccError(hcc_errors.ViolinNoVNCInternalInitFail, "mysql.Init(): "+err.Error()).Fatal()
 	}
 
-	client.InitGRPCClient()
+	err = client.Init()
+	if err != nil {
+		hcc_errors.NewHccError(hcc_errors.ViolinNoVNCInternalInitFail, "client.Init(): "+err.Error()).Fatal()
+	}
 
 	es := driver.Init()
 	if es != nil {
 		logger.Logger.Println("noVNCDriver Init failed. Skip proxy restore")
-		es.Dump()
+		_ = es.Dump()
 	}
 }
 
 func end() {
-	logger.End()
-	mysql.End()
-	client.CleanGRPCClient()
 	server.CleanGRPCServer()
+	client.End()
+	mysql.End()
+	logger.End()
 }
 
 func main() {

@@ -2,9 +2,9 @@ package client
 
 import (
 	"context"
+	"net"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"google.golang.org/grpc"
@@ -16,30 +16,73 @@ import (
 	"hcc/violin-novnc/lib/logger"
 )
 
-var harpconn *grpc.ClientConn
+var harpConn *grpc.ClientConn
 
-func initHarp(wg *sync.WaitGroup) *errors.HccError {
+func initHarp() error {
 	var err error
-	addr := config.Harp.Address + ":" + strconv.FormatInt(config.Harp.Port, 10)
-	logger.Logger.Println("Try connect to harp " + addr)
-	harpconn, err = grpc.Dial(addr, grpc.WithInsecure(), grpc.WithBlock())
+
+	addr := config.Harp.ServerAddress + ":" + strconv.FormatInt(config.Harp.ServerPort, 10)
+	harpConn, err = grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
-		return errors.NewHccError(errors.ViolinNoVNCGrpcConnectionFail, "harp : "+err.Error())
+		return err
 	}
 
-	RC.harp = pb.NewHarpClient(harpconn)
-	logger.Logger.Println("GRPC connection to harp created")
+	RC.harp = pb.NewHarpClient(harpConn)
+	logger.Logger.Println("gRPC harp client ready")
 
-	wg.Done()
 	return nil
 }
 
-func cleanHarp() {
-	_ = harpconn.Close()
+func closeHarp() {
+	_ = harpConn.Close()
+}
+
+func pingHarp() bool {
+	conn, err := net.DialTimeout("tcp", net.JoinHostPort(config.Harp.ServerAddress,
+		strconv.FormatInt(config.Harp.ServerPort, 10)),
+		time.Duration(config.Grpc.ClientPingTimeoutMs)*time.Millisecond)
+	if err != nil {
+		return false
+	}
+	if conn != nil {
+		defer func() {
+			_ = conn.Close()
+		}()
+		return true
+	}
+
+	return false
+}
+
+func checkHarp() {
+	ticker := time.NewTicker(time.Duration(config.Grpc.ClientPingIntervalMs) * time.Millisecond)
+	go func() {
+		connOk := true
+		for range ticker.C {
+			pingOk := pingHarp()
+			if pingOk {
+				if !connOk {
+					logger.Logger.Println("checkHarp(): Ping Ok! Resetting connection...")
+					closeHarp()
+					err := initHarp()
+					if err != nil {
+						logger.Logger.Println("checkHarp(): " + err.Error())
+						continue
+					}
+					connOk = true
+				}
+			} else {
+				if connOk {
+					logger.Logger.Println("checkHarp(): Harp module seems dead. Pinging...")
+				}
+				connOk = false
+			}
+		}
+	}()
 }
 
 // GetServerIP : Get the server's Leader Node IP address
-func (rc *RpcClient) GetServerIP(srvUUID string) (string, *errors.HccErrorStack) {
+func (rc *RPCClient) GetServerIP(srvUUID string) (string, *errors.HccErrorStack) {
 	var srvIP string
 	var errStack *errors.HccErrorStack
 

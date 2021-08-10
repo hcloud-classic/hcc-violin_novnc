@@ -1,13 +1,13 @@
 package dao
 
 import (
+	dbsql "database/sql"
 	"hcc/violin-novnc/lib/mysql"
 	"hcc/violin-novnc/model"
-
 	errors "innogrid.com/hcloud-classic/hcc_errors"
 )
 
-func sendStmt(sql string, params ...interface{}) (mysql.Result, *errors.HccError) {
+func sendStmt(sql string, params ...interface{}) (dbsql.Result, *errors.HccError) {
 	stmt, err := mysql.Db.Prepare(sql)
 	if err != nil {
 		return nil, errors.NewHccError(errors.ViolinNoVNCInternalOperationFail, "sql Prepare : "+err.Error())
@@ -26,7 +26,7 @@ func sendStmt(sql string, params ...interface{}) (mysql.Result, *errors.HccError
 	return result, nil
 }
 
-func sendQuery(sql string) (*mysql.Rows, *errors.HccError) {
+func sendQuery(sql string) (*dbsql.Rows, *errors.HccError) {
 	result, err := mysql.Db.Query(sql)
 	if err != nil {
 		return nil, errors.NewHccError(errors.ViolinNoVNCInternalOperationFail, "sql Query : "+err.Error())
@@ -83,7 +83,7 @@ func DecreaseVNCUserCount(vncInfo model.Vnc) *errors.HccError {
 	return nil
 }
 
-func GetVNCSrvSockPair() (*mysql.Rows, *errors.HccError) {
+func GetVNCSrvSockPair() (*dbsql.Rows, *errors.HccError) {
 
 	sql := "SELECT `port_number`, `server_uuid`, `user_cnt` FROM `violin_novnc`.`allocated_port` ORDER BY `port_number` ASC"
 
