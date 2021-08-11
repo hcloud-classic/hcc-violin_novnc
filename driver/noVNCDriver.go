@@ -35,22 +35,24 @@ var VNCD = VNCDriver{
 }
 
 func Init() *errors.HccErrorStack {
-	var esInit *errors.HccErrorStack = errors.NewHccErrorStack(
+	var esInit = errors.NewHccErrorStack(
 		errors.NewHccError(errors.ViolinNoVNCInternalInitFail, "noVNC Driver"))
 
 	result, err := dao.GetVNCSrvSockPair()
 	if err != nil {
-		esInit.Push(err)
+		_ = esInit.Push(err)
 		return esInit
 	}
 
-	defer result.Close()
+	defer func() {
+		_ = result.Close()
+	}()
 
 	for result.Next() {
 		var webSocket, srvUUID, userCount string
 
 		if e := result.Scan(&webSocket, &srvUUID, &userCount); e != nil {
-			esInit.Push(errors.NewHccError(errors.ViolinNoVNCInternalOperationFail,
+			_ = esInit.Push(errors.NewHccError(errors.ViolinNoVNCInternalOperationFail,
 				"Fail to read socket-uuid pair data"))
 			return esInit
 		}
@@ -63,7 +65,7 @@ func Init() *errors.HccErrorStack {
 		es := VNCD.Recover(&vncInfo)
 		if es != nil {
 			esInit.Merge(es)
-			dao.DeleteVNCInfo(vncInfo)
+			_ = dao.DeleteVNCInfo(vncInfo)
 		}
 	}
 
@@ -76,7 +78,7 @@ func Init() *errors.HccErrorStack {
 
 func (vncd *VNCDriver) setVncInfo(vncInfo *model.Vnc) *errors.HccErrorStack {
 
-	var esSetInfo *errors.HccErrorStack = errors.NewHccErrorStack(
+	var esSetInfo = errors.NewHccErrorStack(
 		errors.NewHccError(errors.ViolinNoVNCDriverOperationFail, "Set VNC Info"))
 
 	logger.Logger.Print("Asking server ip to harp...")
@@ -84,7 +86,7 @@ func (vncd *VNCDriver) setVncInfo(vncInfo *model.Vnc) *errors.HccErrorStack {
 	srvIP, es := client.RC.GetServerIP(vncInfo.ServerUUID)
 	if es != nil {
 		logger.Logger.Println("[FAIL]")
-		esSetInfo.Push(errors.NewHccError(
+		_ = esSetInfo.Push(errors.NewHccError(
 			errors.ViolinNoVNCDriverReceiveError,
 			"Cannot find server ip ["+vncInfo.ServerUUID+"]"))
 		esSetInfo.Merge(es)
@@ -103,7 +105,7 @@ func (vncd *VNCDriver) setVncInfo(vncInfo *model.Vnc) *errors.HccErrorStack {
 
 		if vncInfo.WebSocket == "" {
 			logger.Logger.Println("[FAIL]")
-			esSetInfo.Push(errors.NewHccError(
+			_ = esSetInfo.Push(errors.NewHccError(
 				errors.ViolinNoVNCDriverOperationFail,
 				"Websocket allocation for ["+vncInfo.ServerUUID+"]"))
 			vncd.createMutex.Unlock()
@@ -285,7 +287,7 @@ func (vncd *VNCDriver) Delete(vncInfo *model.Vnc) *errors.HccErrorStack {
 }
 
 func (vncd *VNCDriver) Recover(vncInfo *model.Vnc) *errors.HccErrorStack {
-	var esRestore *errors.HccErrorStack = errors.NewHccErrorStack(
+	var esRestore = errors.NewHccErrorStack(
 		errors.NewHccError(errors.ViolinNoVNCDriverOperationFail, "Restore VNC Proxy"))
 
 	es := vncd.setVncInfo(vncInfo)
@@ -313,7 +315,7 @@ func (vncd *VNCDriver) Recover(vncInfo *model.Vnc) *errors.HccErrorStack {
 			PD.ReturnPort(p.(string))
 			vncd.serverWSMap.Delete(vncInfo.ServerUUID)
 
-			dao.DeleteVNCInfo(*vncInfo)
+			_ = dao.DeleteVNCInfo(*vncInfo)
 		}()
 
 		logger.Logger.Print("Create VNC Proxy...")
