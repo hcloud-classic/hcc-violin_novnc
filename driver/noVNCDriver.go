@@ -1,7 +1,6 @@
 package driver
 
 import (
-	"innogrid.com/hcloud-classic/pb"
 	"strconv"
 	"sync"
 
@@ -165,23 +164,6 @@ func (vncd *VNCDriver) Create(vncInfo *model.Vnc) *errors.HccErrorStack {
 			return esCreate
 		}
 
-		port, _ := strconv.Atoi(vncInfo.WebSocket)
-		_, err := client.RC.CreatePortForwarding(&pb.ReqCreatePortForwarding{
-			PortForwarding: &pb.PortForwarding{
-				ServerUUID:   "master",
-				ForwardTCP:   true,
-				ForwardUDP:   false,
-				ExternalPort: int64(port),
-				InternalPort: 0,
-				Description:  "VNC_" + vncInfo.ServerUUID,
-			},
-		})
-		if err != nil {
-			esCreate.Merge(es)
-
-			return esCreate
-		}
-
 		proxy := vncd.getSingleSessionProxy(vncInfo)
 
 		vncd.serverProxyMap.Store(vncInfo.ServerUUID, proxy)
@@ -248,21 +230,6 @@ func (vncd *VNCDriver) Delete(vncInfo *model.Vnc) *errors.HccErrorStack {
 
 	vncInfo.WebSocket = ws.(string)
 
-	port, _ := strconv.Atoi(vncInfo.WebSocket)
-	_, err := client.RC.DeletePortForwarding(&pb.ReqDeletePortForwarding{
-		PortForwarding: &pb.PortForwarding{
-			ServerUUID:   "master",
-			ExternalPort: int64(port),
-		},
-	})
-	if err != nil {
-		es = errors.NewHccErrorStack(
-			errors.NewHccError(
-				errors.ViolinNoVNCGrpcRequestError,
-				err.Error()))
-		return es
-	}
-
 	// Prevent load before store in another go rutine
 	vncd.addMutex.Lock()
 	cn, _ := vncd.serverConnectionMap.Load(vncInfo.ServerUUID)
@@ -277,7 +244,7 @@ func (vncd *VNCDriver) Delete(vncInfo *model.Vnc) *errors.HccErrorStack {
 
 	vncd.addMutex.Unlock()
 
-	err = dao.DecreaseVNCUserCount(*vncInfo)
+	err := dao.DecreaseVNCUserCount(*vncInfo)
 	if err != nil {
 		// Not fatal error. Just log it
 		logger.Logger.Println("Proxy user count decrease failed\n", err.Error())
