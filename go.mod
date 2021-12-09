@@ -7,7 +7,7 @@ require (
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/go-sql-driver/mysql v1.5.0
 	golang.org/x/net v0.0.0-20201224014010-6772e930b67b
-	google.golang.org/grpc v1.41.0
+	google.golang.org/grpc v1.42.0
 	innogrid.com/hcloud-classic/hcc_errors v1.1.2
 	innogrid.com/hcloud-classic/pb v0.0.0
 )
