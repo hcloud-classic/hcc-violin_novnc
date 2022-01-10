@@ -42,15 +42,15 @@ func init() {
 
 	config.Init()
 
-	err = mysql.Init()
-	if err != nil {
-		hcc_errors.NewHccError(hcc_errors.ViolinNoVNCInternalInitFail, "mysql.Init(): "+err.Error()).Fatal()
-		_ = pid.DeleteViolinNovncPID()
-	}
-
 	err = client.Init()
 	if err != nil {
 		hcc_errors.NewHccError(hcc_errors.ViolinNoVNCInternalInitFail, "client.Init(): "+err.Error()).Fatal()
+		_ = pid.DeleteViolinNovncPID()
+	}
+
+	err = mysql.Init()
+	if err != nil {
+		hcc_errors.NewHccError(hcc_errors.ViolinNoVNCInternalInitFail, "mysql.Init(): "+err.Error()).Fatal()
 		_ = pid.DeleteViolinNovncPID()
 	}
 
