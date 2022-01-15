@@ -6,6 +6,7 @@ import (
 
 // RPCClient : Struct type of gRPC clients
 type RPCClient struct {
+	horn pb.HornClient
 	harp pb.HarpClient
 }
 
@@ -14,7 +15,12 @@ var RC = &RPCClient{}
 
 // Init : Initialize clients of gRPC
 func Init() error {
-	err := initHarp()
+	err := initHorn()
+	if err != nil {
+		return err
+	}
+
+	err = initHarp()
 	if err != nil {
 		return err
 	}
@@ -26,4 +32,5 @@ func Init() error {
 // End : Close connections of gRPC clients
 func End() {
 	closeHarp()
+	closeHorn()
 }

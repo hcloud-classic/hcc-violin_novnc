@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"hcc/violin-novnc/action/grpc/client"
 	"hcc/violin-novnc/lib/config"
 	"hcc/violin-novnc/lib/logger"
 	"testing"
@@ -21,6 +22,11 @@ func Test_DB_Prepare(t *testing.T) {
 	}()
 
 	config.Init()
+
+	err = client.Init()
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	err = Init()
 	if err != nil {
