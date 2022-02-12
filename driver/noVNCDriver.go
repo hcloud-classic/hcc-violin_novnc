@@ -219,6 +219,7 @@ func (vncd *VNCDriver) Create(vncInfo *model.Vnc) *errors.HccErrorStack {
 func (vncd *VNCDriver) Delete(vncInfo *model.Vnc) *errors.HccErrorStack {
 	var es *errors.HccErrorStack
 
+	logger.Logger.Print("Deleting VNC proxy websocket for serverUUID=" + vncInfo.ServerUUID + "...")
 	ws, b := vncd.serverWSMap.Load(vncInfo.ServerUUID)
 	if !b {
 		es = errors.NewHccErrorStack(
